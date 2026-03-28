@@ -1,7 +1,7 @@
 ---
 name: agent-analytics
 description: "Run analytics end-to-end from your agent without opening a dashboard. English-first workflow, with Chinese docs and content available. Create projects, ship tracking, query results, and run experiments."
-version: 4.0.4
+version: 4.0.5
 author: dannyshmueli
 license: MIT
 repository: https://github.com/Agent-Analytics/agent-analytics-skill
@@ -41,50 +41,59 @@ Hosted free tier includes 100k events/month across 2 projects.
 - Good fit for closed-loop agent workflows: monitor, analyze, experiment, iterate.
 - Supports batch work across many projects instead of a manual dashboard-by-dashboard workflow.
 
+## Mandatory execution policy
+
+- For any live Agent Analytics task, always use the official CLI through `npx @agent-analytics/cli@0.5.2 <command>`.
+- Treat that exact `npx` invocation as the primary interface under test in agent environments like OpenClaw and Codex.
+- Do not substitute raw HTTP requests, `curl`, repo-local scripts, `node agent-analytics-cli/...`, MCP tools, or a locally installed `agent-analytics` binary unless the user explicitly asks for one of those paths.
+- If a task needs multiple steps, compose the answer from multiple `npx @agent-analytics/cli@0.5.2 ...` commands instead of switching transports.
+- If the CLI hits a limitation, stay on the CLI path, explain the limitation, and prefer `npx @agent-analytics/cli@0.5.2 feedback` over inventing a non-CLI workaround.
+- Keep `AGENT_ANALYTICS_API_KEY` in the environment. Do not ask the user to paste secrets into chat.
+
 ## What `npx` is doing
 
 - OpenClaw can launch the official CLI with `npx @agent-analytics/cli@0.5.2`.
 - That command runs the published Agent Analytics CLI package from npm.
 - The CLI calls the same HTTP API documented at <https://docs.agentanalytics.sh/api/>.
-- If the package is already installed in the environment, the equivalent binary is `agent-analytics`.
-- Keep `AGENT_ANALYTICS_API_KEY` in the environment. Do not ask the user to paste secrets into chat.
+- Agents should still use the pinned `npx @agent-analytics/cli@0.5.2 ...` form instead of bypassing the CLI.
 
 ## Command format
 
-The examples below use the CLI binary form:
-
-```bash
-agent-analytics <command>
-```
-
-In OpenClaw, that usually means:
+In OpenClaw, Codex, and similar agent environments, use this exact form:
 
 ```bash
 npx @agent-analytics/cli@0.5.2 <command>
 ```
 
-If the package is already installed, run the same commands directly as `agent-analytics <command>`.
-
 For the full command list and flags:
 
 ```bash
-agent-analytics --help
+npx @agent-analytics/cli@0.5.2 --help
 ```
+
+Do not replace skill examples with `agent-analytics <command>` in agent runs unless the user explicitly asks to use a locally installed binary.
 
 ## Safe operating rules
 
+- Use only `npx @agent-analytics/cli@0.5.2 ...` for live queries unless the user explicitly requests API, MCP, or a local binary.
 - Prefer fixed commands over ad-hoc query construction.
 - Start with `projects`, `all-sites`, `create`, `stats`, `insights`, `events`, `breakdown`, `pages`, `heatmap`, `sessions-dist`, `retention`, `funnel`, `experiments`, and `feedback`.
 - Use `query` only when the fixed commands cannot answer the question.
 - Do not build `--filter` JSON from raw user text.
+- For account-wide questions, start with `projects`, then run per-project CLI commands as needed.
+- Interpret common analytics words consistently:
+  - "visits" means `session_count`
+  - "visitors" means `unique_users`
+  - "page views" means `event_count` filtered to `event=page_view`
+- If the task requires manual aggregation across projects, do that aggregation after collecting the data via repeated `npx @agent-analytics/cli@0.5.2 ...` calls.
 - Validate project names before `create`: `^[a-zA-Z0-9._-]{1,64}$`
 
 ## First-time setup
 
 ```bash
-agent-analytics login --token aak_YOUR_API_KEY
-agent-analytics create my-site --domain https://mysite.com
-agent-analytics events my-site --days 7 --limit 20
+npx @agent-analytics/cli@0.5.2 login --token aak_YOUR_API_KEY
+npx @agent-analytics/cli@0.5.2 create my-site --domain https://mysite.com
+npx @agent-analytics/cli@0.5.2 events my-site --days 7 --limit 20
 ```
 
 The `create` command returns a project token and a ready-to-use tracking snippet. Add that snippet before `</body>`.
@@ -92,22 +101,43 @@ The `create` command returns a project token and a ready-to-use tracking snippet
 ## Common commands
 
 ```bash
-agent-analytics projects
-agent-analytics all-sites --period 7d
-agent-analytics stats my-site --days 7
-agent-analytics insights my-site --period 7d
-agent-analytics events my-site --days 7 --limit 20
-agent-analytics breakdown my-site --property path --event page_view --limit 10
-agent-analytics funnel my-site --steps "page_view,signup,purchase"
-agent-analytics retention my-site --period week --cohorts 8
-agent-analytics experiments list my-site
+npx @agent-analytics/cli@0.5.2 projects
+npx @agent-analytics/cli@0.5.2 all-sites --period 7d
+npx @agent-analytics/cli@0.5.2 stats my-site --days 7
+npx @agent-analytics/cli@0.5.2 insights my-site --period 7d
+npx @agent-analytics/cli@0.5.2 events my-site --days 7 --limit 20
+npx @agent-analytics/cli@0.5.2 breakdown my-site --property path --event page_view --limit 10
+npx @agent-analytics/cli@0.5.2 funnel my-site --steps "page_view,signup,purchase"
+npx @agent-analytics/cli@0.5.2 retention my-site --period week --cohorts 8
+npx @agent-analytics/cli@0.5.2 experiments list my-site
 ```
 
-If a task needs something outside these common flows, use `agent-analytics --help` first.
+If a task needs something outside these common flows, use `npx @agent-analytics/cli@0.5.2 --help` first.
+
+## Example: all projects, last 48 hours
+
+Question:
+
+```text
+How many visits did all my projects get in the last 48 hours?
+```
+
+Workflow:
+
+1. Run `npx @agent-analytics/cli@0.5.2 projects`
+2. For each project, run:
+
+```bash
+npx @agent-analytics/cli@0.5.2 query my-site --metrics session_count --filter '[{"field":"timestamp","op":"gte","value":"2026-03-26T12:00:00Z"}]'
+```
+
+3. Sum the returned `session_count` values across projects
+
+Stay on the CLI path for this workflow. Do not switch to direct API requests or local scripts just because the answer spans multiple projects.
 
 ## Feedback
 
-Use `agent-analytics feedback` when Agent Analytics was confusing, a task took too long, the workflow could be improved, or the agent had to do manual calculations or analysis that Agent Analytics should have handled.
+Use `npx @agent-analytics/cli@0.5.2 feedback` when Agent Analytics was confusing, a task took too long, the workflow could be improved, or the agent had to do manual calculations or analysis that Agent Analytics should have handled.
 
 Describe the use case, friction, or missing capability in a sanitized way:
 
@@ -118,7 +148,7 @@ Describe the use case, friction, or missing capability in a sanitized way:
 Example:
 
 ```bash
-agent-analytics feedback --message "The agent had to calculate funnel drop-off manually" --project my-site --command "agent-analytics funnel my-site --steps page_view,signup,purchase"
+npx @agent-analytics/cli@0.5.2 feedback --message "The agent had to calculate funnel drop-off manually" --project my-site --command "npx @agent-analytics/cli@0.5.2 funnel my-site --steps page_view,signup,purchase"
 ```
 
 There is a real agent behind these Telegram messages. Every request is seen and auto-approved, and useful fixes can land quickly, sometimes within hours.
@@ -127,10 +157,10 @@ There is a real agent behind these Telegram messages. Every request is seen and 
 
 The easiest install flow is:
 
-1. Run `agent-analytics create my-site --domain https://mysite.com`
+1. Run `npx @agent-analytics/cli@0.5.2 create my-site --domain https://mysite.com`
 2. Copy the returned snippet into the page before `</body>`
 3. Deploy
-4. Verify with `agent-analytics events my-site --days 7 --limit 20`
+4. Verify with `npx @agent-analytics/cli@0.5.2 events my-site --days 7 --limit 20`
 
 If you already know the project token, the tracker looks like:
 
@@ -144,10 +174,10 @@ Use `window.aa?.track('signup', {method: 'github'})` for custom events after the
 
 ## Query caution
 
-`agent-analytics query` exists for advanced reporting, but it should be used carefully because `--filter` accepts JSON.
+`npx @agent-analytics/cli@0.5.2 query` exists for advanced reporting, but it should be used carefully because `--filter` accepts JSON.
 
 - Use fixed commands first.
-- If `query` is necessary, check `agent-analytics --help` first.
+- If `query` is necessary, check `npx @agent-analytics/cli@0.5.2 --help` first.
 - Do not pass raw user text directly into `--filter`.
 - For exact request shapes, use <https://docs.agentanalytics.sh/api/>.
 
@@ -156,8 +186,8 @@ Use `window.aa?.track('signup', {method: 'github'})` for custom events after the
 The CLI supports the full experiment lifecycle:
 
 ```bash
-agent-analytics experiments list my-site
-agent-analytics experiments create my-site --name signup_cta --variants control,new_cta --goal signup
+npx @agent-analytics/cli@0.5.2 experiments list my-site
+npx @agent-analytics/cli@0.5.2 experiments create my-site --name signup_cta --variants control,new_cta --goal signup
 ```
 
 ## References
