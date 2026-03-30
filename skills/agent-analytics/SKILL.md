@@ -1,7 +1,7 @@
 ---
 name: agent-analytics
 description: "Run analytics end-to-end from your agent without opening a dashboard. English-first workflow, with Chinese docs and content available. Create projects, ship tracking, query results, and run experiments."
-version: 4.0.5
+version: 4.0.6
 author: dannyshmueli
 license: MIT
 repository: https://github.com/Agent-Analytics/agent-analytics-skill
@@ -179,7 +179,31 @@ Use `window.aa?.track('signup', {method: 'github'})` for custom events after the
 - Use fixed commands first.
 - If `query` is necessary, check `npx @agent-analytics/cli@0.5.2 --help` first.
 - Do not pass raw user text directly into `--filter`.
+- The only valid CLI shape is `npx @agent-analytics/cli@0.5.2 query <project> ...`. Do not use `--project`.
 - For exact request shapes, use <https://docs.agentanalytics.sh/api/>.
+
+## Attribution and first-touch queries
+
+Use a disciplined workflow when the task is about social attribution, first-touch UTMs, landing pages, hosts, or CTA performance.
+
+1. Start with fixed commands if they answer the question.
+2. Run `npx @agent-analytics/cli@0.5.2 properties <project>` to inspect event names and property keys first.
+3. Use `npx @agent-analytics/cli@0.5.2 query <project> --filter ...` for property-filtered counts.
+4. Use `npx @agent-analytics/cli@0.5.2 events <project>` only to validate ambiguous payloads or missing properties.
+5. Use `npx @agent-analytics/cli@0.5.2 feedback` if the requested slice depends on unsupported grouping or derived reporting.
+
+Property filters support built-in fields plus any `properties.*` key, including first-touch UTM fields such as `properties.first_utm_source`.
+
+`group_by` only supports built-in fields: `event`, `date`, `user_id`, `session_id`, and `country`. It does not support `properties.hostname`, `properties.first_utm_source`, `properties.cta`, or other arbitrary property keys.
+
+Example workflow for first-touch social page views:
+
+```bash
+npx @agent-analytics/cli@0.5.2 properties my-site
+npx @agent-analytics/cli@0.5.2 query my-site --metrics event_count --filter '[{"field":"event","op":"eq","value":"page_view"},{"field":"properties.first_utm_source","op":"eq","value":"reddit"}]' --days 30
+```
+
+If the user wants a one-shot direct-social slice grouped by channel, host, CTA, or an activation proxy, explain that the current query surface cannot group by arbitrary `properties.*` fields and send product feedback instead of inventing an unreliable manual answer.
 
 ## Experiments
 
