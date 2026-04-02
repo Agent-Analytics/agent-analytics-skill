@@ -26,13 +26,13 @@ npx @agent-analytics/cli@0.5.4 <command>
 
 Agent environments should prefer that exact `npx` form over raw API calls, repo-local scripts, or an already-installed binary unless the user explicitly asks for a different interface.
 
-The published skill now assumes the browser-approval login flow first:
+The published skill now assumes browser approval or detached finish-code login first:
 
 ```text
 Set up Agent Analytics for this project. Install it here if needed. If browser approval is needed, open it and wait for me. I will sign in with Google or GitHub and approve it. Then create the project, add tracking and key events, and verify the first event.
 ```
 
-Raw API keys remain an advanced/manual fallback, not the primary onboarding path.
+Normal setup does not require an API key. Raw API keys remain an advanced/manual fallback for custom direct HTTP runtimes.
 
 For direct MCP setup, use the install guides on the docs site.
 

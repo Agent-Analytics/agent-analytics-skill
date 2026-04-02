@@ -1,12 +1,12 @@
 ---
 name: agent-analytics
 description: "Run analytics end-to-end from your agent without opening a dashboard. English-first workflow, with Chinese docs and content available. Create projects, ship tracking, query results, and run experiments."
-version: 4.0.8
+version: 4.0.9
 author: dannyshmueli
 license: MIT
 repository: https://github.com/Agent-Analytics/agent-analytics-skill
 homepage: https://agentanalytics.sh
-compatibility: Requires npx. Browser approval is the primary login path; detached approval plus finish-code handoff is the default for issue-based runtimes; AGENT_ANALYTICS_API_KEY remains an advanced/manual fallback for direct HTTP-style setups.
+compatibility: Requires npx. Browser approval is the primary login path, and detached approval plus finish-code handoff is the default for issue-based runtimes. Normal setup does not require an API key.
 tags:
   - analytics
   - tracking
@@ -29,6 +29,11 @@ English-first workflow, with Chinese docs and content available for OpenClaw use
 
 Use it when you want an agent to operate growth analytics end-to-end, automate recurring checks, and manage multiple projects from one conversation loop.
 
+The CLI behind this skill is open source and published from:
+
+- GitHub: <https://github.com/Agent-Analytics/agent-analytics-cli>
+- npm: <https://www.npmjs.com/package/@agent-analytics/cli>
+
 Hosted free tier includes 100k events/month across 2 projects.
 
 ## Chinese support / 中文支持
@@ -45,7 +50,7 @@ Hosted free tier includes 100k events/month across 2 projects.
 - Do not substitute raw HTTP requests, `curl`, repo-local scripts, `node agent-analytics-cli/...`, MCP tools, or a locally installed `agent-analytics` binary unless the user explicitly asks for one of those paths.
 - If a task needs multiple steps, compose the answer from multiple `npx @agent-analytics/cli@0.5.4 ...` commands instead of switching transports.
 - If the CLI hits a limitation, stay on the CLI path, explain the limitation, and prefer `npx @agent-analytics/cli@0.5.4 feedback` over inventing a non-CLI workaround.
-- Default to browser approval for signup/login. In issue-based runtimes like OpenClaw, prefer detached approval plus a finish-code reply. Treat `AGENT_ANALYTICS_API_KEY` only as an advanced/manual fallback, and do not ask the user to paste secrets into chat.
+- Default to browser approval for signup/login. In issue-based runtimes like OpenClaw, prefer detached approval plus a finish-code reply. Do not ask the user to paste secrets into chat.
 
 ## What `npx` is doing
 
@@ -104,7 +109,7 @@ npx @agent-analytics/cli@0.5.4 login --detached
 npx @agent-analytics/cli@0.5.4 login --token aak_YOUR_API_KEY
 ```
 
-Use `--detached` when the runtime cannot receive a localhost browser callback or when the workflow happens in issues or task threads. Use `--token` only as the advanced/manual fallback path.
+Use `--detached` when the runtime cannot receive a localhost browser callback or when the workflow happens in issues or task threads.
 
 ## Default agent task
 
@@ -124,6 +129,10 @@ For OpenClaw-style issue workflows, the expected login loop is:
 4. complete the exchange and keep going with setup
 
 This is the preferred managed-runtime path. Do not ask the user to paste a permanent API key into chat.
+
+## Advanced/manual fallback
+
+If a custom runtime truly requires direct HTTP auth later, `login --token` still exists as an advanced/manual fallback. It is not the normal setup path for OpenClaw, Codex, or browser-approved agent onboarding.
 
 ## Common commands
 
