@@ -1,12 +1,12 @@
 ---
 name: agent-analytics
 description: "Run analytics end-to-end from your agent without opening a dashboard. English-first workflow, with Chinese docs and content available. Create projects, ship tracking, query results, and run experiments."
-version: 4.0.7
+version: 4.0.8
 author: dannyshmueli
 license: MIT
 repository: https://github.com/Agent-Analytics/agent-analytics-skill
 homepage: https://agentanalytics.sh
-compatibility: Requires npx. Browser approval is the primary login path; AGENT_ANALYTICS_API_KEY remains an advanced/manual fallback for direct HTTP-style setups.
+compatibility: Requires npx. Browser approval is the primary login path; detached approval plus finish-code handoff is the default for issue-based runtimes; AGENT_ANALYTICS_API_KEY remains an advanced/manual fallback for direct HTTP-style setups.
 tags:
   - analytics
   - tracking
@@ -45,7 +45,7 @@ Hosted free tier includes 100k events/month across 2 projects.
 - Do not substitute raw HTTP requests, `curl`, repo-local scripts, `node agent-analytics-cli/...`, MCP tools, or a locally installed `agent-analytics` binary unless the user explicitly asks for one of those paths.
 - If a task needs multiple steps, compose the answer from multiple `npx @agent-analytics/cli@0.5.4 ...` commands instead of switching transports.
 - If the CLI hits a limitation, stay on the CLI path, explain the limitation, and prefer `npx @agent-analytics/cli@0.5.4 feedback` over inventing a non-CLI workaround.
-- Default to browser approval for signup/login. Treat `AGENT_ANALYTICS_API_KEY` only as an advanced/manual fallback, and do not ask the user to paste secrets into chat.
+- Default to browser approval for signup/login. In issue-based runtimes like OpenClaw, prefer detached approval plus a finish-code reply. Treat `AGENT_ANALYTICS_API_KEY` only as an advanced/manual fallback, and do not ask the user to paste secrets into chat.
 
 ## What `npx` is doing
 
@@ -88,12 +88,14 @@ Do not replace skill examples with `agent-analytics <command>` in agent runs unl
 ## First-time setup
 
 ```bash
-npx @agent-analytics/cli@0.5.4 login
+npx @agent-analytics/cli@0.5.4 login --detached
 npx @agent-analytics/cli@0.5.4 create my-site --domain https://mysite.com
 npx @agent-analytics/cli@0.5.4 events my-site --days 7 --limit 20
 ```
 
-If browser approval opens, wait for the user to sign in with Google or GitHub and approve it. The `create` command returns a project token and a ready-to-use tracking snippet. Add that snippet before `</body>`.
+For OpenClaw and other issue-based runtimes, `login --detached` is the preferred first step. Send the approval URL to the user, wait for them to sign in with Google or GitHub, and expect a finish code reply. Then complete login and continue with project setup.
+
+If the runtime can receive a localhost browser callback, regular `login` is also valid. The `create` command returns a project token and a ready-to-use tracking snippet. Add that snippet before `</body>`.
 
 Fallbacks:
 
@@ -102,15 +104,26 @@ npx @agent-analytics/cli@0.5.4 login --detached
 npx @agent-analytics/cli@0.5.4 login --token aak_YOUR_API_KEY
 ```
 
-Use `--detached` when the runtime cannot receive a localhost browser callback. Use `--token` only as the advanced/manual fallback path.
+Use `--detached` when the runtime cannot receive a localhost browser callback or when the workflow happens in issues or task threads. Use `--token` only as the advanced/manual fallback path.
 
 ## Default agent task
 
 When the user wants Agent Analytics installed in the current repo, the default task shape is:
 
 ```text
-Set up Agent Analytics for this project. Install it here if needed. If browser approval is needed, open it and wait for me. I will sign in with Google or GitHub and approve it. Then create the project, add tracking and key events, and verify the first event.
+Set up Agent Analytics for this project. Install it here if needed. If approval is needed, send me the approval link and wait. I will sign in with Google or GitHub, then reply with the finish code. After that, create the project, add tracking and key events, and verify the first event.
 ```
+
+## Detached approval handoff
+
+For OpenClaw-style issue workflows, the expected login loop is:
+
+1. run `npx @agent-analytics/cli@0.5.4 login --detached`
+2. send the approval URL to the user
+3. wait for the user to reply with the finish code
+4. complete the exchange and keep going with setup
+
+This is the preferred managed-runtime path. Do not ask the user to paste a permanent API key into chat.
 
 ## Common commands
 
