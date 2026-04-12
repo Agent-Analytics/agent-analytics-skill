@@ -3,7 +3,7 @@
 Public skill repo for installing Agent Analytics into agent environments with:
 
 ```bash
-npx skills add Agent-Analytics/agent-analytics-skill@agent-analytics
+npx skills add Agent-Analytics/agent-analytics-skill
 ```
 
 This repo intentionally contains only the public skill definition. It does not include the private MCP server implementation or deployment configuration.
