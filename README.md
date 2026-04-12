@@ -22,7 +22,7 @@ The `agent-analytics` skill teaches an agent how to use the official Agent Analy
 The skill is intentionally pinned to the official CLI invocation:
 
 ```bash
-npx @agent-analytics/cli@0.5.9 <command>
+npx @agent-analytics/cli@0.5.10 <command>
 ```
 
 Agent environments should prefer that exact `npx` form over raw API calls, repo-local scripts, or an already-installed binary unless the user explicitly asks for a different interface.
