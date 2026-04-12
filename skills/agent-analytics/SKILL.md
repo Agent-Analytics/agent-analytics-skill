@@ -1,7 +1,7 @@
 ---
 name: agent-analytics
 description: "Run analytics end-to-end from your agent without opening a dashboard. English-first workflow, with Chinese docs and content available. Create projects, ship tracking, query results, and run experiments."
-version: 4.0.13
+version: 4.0.14
 author: dannyshmueli
 license: MIT
 repository: https://github.com/Agent-Analytics/agent-analytics-skill
@@ -14,6 +14,11 @@ tags:
   - events
   - experiments
   - live
+provides:
+  - capability: analytics
+  - capability: ab-testing
+  - capability: funnels
+  - capability: retention
 metadata:
   openclaw:
     requires:
