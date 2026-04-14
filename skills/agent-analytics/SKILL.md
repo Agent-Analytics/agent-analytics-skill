@@ -188,7 +188,7 @@ Workflow:
 2. For each project, run:
 
 ```bash
-npx @agent-analytics/cli@0.5.10 query my-site --metrics session_count --filter '[{"field":"timestamp","op":"gte","value":"2026-03-26T12:00:00Z"}]'
+npx @agent-analytics/cli@0.5.10 query my-site --metrics session_count --days 2
 ```
 
 3. Sum the returned `session_count` values across projects
@@ -241,6 +241,7 @@ Use `window.aa?.track('signup', {method: 'github'})` for custom events after the
 - Do not pass raw user text directly into `--filter`.
 - The only valid CLI shape is `npx @agent-analytics/cli@0.5.10 query <project> ...`. Do not use `--project`.
 - Built-in query filter fields are only `event`, `user_id`, `date`, `country`, `session_id`, and `timestamp`.
+- For recent signup or ingestion debugging, check `events <project> --event <actual_event_name>` first; use `query` after verifying the raw event names the project emits.
 - All event-property filters must use `properties.<key>`, for example `properties.referrer`, `properties.utm_source`, or `properties.first_utm_source`.
 - Invalid filter fields now fail loudly and return `/properties`-style guidance. Do not rely on bare fields like `referrer` or `utm_source`.
 - For exact request shapes, use <https://docs.agentanalytics.sh/api/>.
