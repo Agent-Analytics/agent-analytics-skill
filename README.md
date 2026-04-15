@@ -59,7 +59,7 @@ The workflow is based on the public template repo:
 The skill is intentionally pinned to the official CLI invocation:
 
 ```bash
-npx @agent-analytics/cli@0.5.11 <command>
+npx @agent-analytics/cli@0.5.12 <command>
 ```
 
 Agent environments should prefer that exact `npx` form over raw API calls, repo-local scripts, or an already-installed binary unless the user explicitly asks for a different interface.
