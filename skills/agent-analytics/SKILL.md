@@ -1,7 +1,7 @@
 ---
 name: agent-analytics
 description: "Run analytics end-to-end from your agent without opening a dashboard. English-first workflow, with Chinese docs and content available. Create projects, ship tracking, query results, and run experiments."
-version: 4.0.16
+version: 4.0.17
 author: dannyshmueli
 license: MIT
 repository: https://github.com/Agent-Analytics/agent-analytics-skill
@@ -194,6 +194,22 @@ npx @agent-analytics/cli@0.5.12 query my-site --metrics session_count --days 2
 3. Sum the returned `session_count` values across projects
 
 Stay on the CLI path for this workflow. Do not switch to direct API requests or local scripts just because the answer spans multiple projects.
+
+## Time windows
+
+Use `--days N` or `since` values like `7d` and `30d` for whole-day lookbacks. Do not use `24h`; the API does not support hour shorthand.
+
+For an exact rolling window such as "last 24 hours", use `query` with timestamp filters. Build the timestamps yourself as epoch milliseconds, keep the date prefilter broad enough to include both dates, and still stay on the CLI path:
+
+```bash
+FROM_MS=$(node -e 'console.log(Date.now() - 24 * 60 * 60 * 1000)')
+TO_MS=$(node -e 'console.log(Date.now())')
+FROM_DATE=$(node -e 'console.log(new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10))')
+TO_DATE=$(node -e 'console.log(new Date().toISOString().slice(0, 10))')
+npx @agent-analytics/cli@0.5.12 query my-site --metrics event_count,unique_users --group-by event --from "$FROM_DATE" --to "$TO_DATE" --filter "[{\"field\":\"timestamp\",\"op\":\"gte\",\"value\":$FROM_MS},{\"field\":\"timestamp\",\"op\":\"lte\",\"value\":$TO_MS}]" --count-mode raw --order-by event_count --order desc
+```
+
+Do not answer an exact "last 24 hours" request with `stats --days 1` unless the user explicitly accepts a whole-day approximation.
 
 ## Feedback
 
