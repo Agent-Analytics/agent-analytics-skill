@@ -4,6 +4,8 @@ You are running an instruction-driven growth loop. Produce two high-quality vari
 
 Do not change product code while running the loop. Produce reviewable copy artifacts first.
 
+Default mode is review-only. Only move into implementation, experiment creation, or measurement after the user explicitly approves that next phase.
+
 ## Setup
 
 1. Read `brief.md` fully.
@@ -125,3 +127,22 @@ Write `final_variants.md` with:
 - data limitations
 
 End with a clear note that the experiment has not been wired yet.
+
+## Approved Outer Experiment Loop
+
+Run this section only if the user explicitly asks you to implement or wire the approved experiment.
+
+1. Implement the approved variant or variants in the product surface named in `brief.md`.
+2. Create the experiment with the recommended control and candidate variants.
+3. Verify tracking for the primary metric, proxy metric, and guardrails.
+4. Let the experiment collect behavior for the requested window.
+5. Pull the experiment results into a new dated data snapshot, including:
+   - winning and losing variants
+   - primary metric movement
+   - proxy metric movement
+   - guardrail movement
+   - screenshots or changed-copy notes
+   - data limitations
+6. Start the next autoresearch loop from that measured evidence.
+
+The LLM loop generates pressure. The outer experiment loop decides what survived contact with users.

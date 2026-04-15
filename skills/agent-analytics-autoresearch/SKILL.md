@@ -1,7 +1,7 @@
 ---
 name: agent-analytics-autoresearch
 description: "Run an autoresearch-style growth loop for landing pages, onboarding, pricing, and experiment candidates. Collect or read analytics snapshots, preserve product truth, generate/critique/synthesize variants, blind-rank with Borda scoring, and output two review-ready A/B test variants. Works with any analytics data; best with Agent Analytics CLI/API."
-version: 1.0.1
+version: 1.0.2
 author: dannyshmueli
 license: MIT
 repository: https://github.com/Agent-Analytics/agent-analytics-skill
@@ -41,6 +41,10 @@ Use the regular `agent-analytics` skill for general setup, tracking installation
 ## Core Rule
 
 Do not edit production copy, product code, or live experiment setup while running the loop unless the user explicitly asks. Produce reviewable artifacts first.
+
+Default mode is review-only: generate variants, log rounds, and write `final_variants.md`.
+
+After explicit human approval, continue into the outer experiment loop when requested: implement the approved variant or variants, create the experiment, run it, measure it with Agent Analytics or another analytics source, save the results as the next snapshot, and start the next autoresearch run from evidence.
 
 ## Inputs
 
@@ -91,6 +95,8 @@ Load these files only when needed:
 
 ## Loop Shape
 
+### Inner Autoresearch Loop
+
 1. Define the surface, control, audience, product truth, metric, proxy, and guardrails.
 2. Collect or read a dated analytics snapshot.
 3. Summarize useful signals and data limitations.
@@ -102,6 +108,19 @@ Load these files only when needed:
 9. Append one TSV-safe row to `results.tsv`.
 10. Repeat several rounds.
 11. Write `final_variants.md` with two distinct variants and the recommended experiment shape.
+
+### Outer Experiment Loop
+
+Only run this phase when the user explicitly approves implementation or experiment setup.
+
+1. Implement the approved variant or variants in the target product surface.
+2. Create the experiment with a control and the approved candidate variants.
+3. Verify tracking for the primary metric, proxy metric, and guardrails.
+4. Let the experiment collect real behavior for the requested window.
+5. Pull experiment results, screenshots or changed-copy notes, funnel movement, guardrails, and data limitations into a new snapshot.
+6. Start the next inner autoresearch loop from that measured evidence.
+
+The outer loop prevents the LLM panel from becoming the final judge. LLMs generate and criticize, humans approve risk, and users decide what worked.
 
 ## Agent Analytics Snapshot
 
