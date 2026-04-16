@@ -127,12 +127,12 @@ The outer loop prevents the LLM panel from becoming the final judge. LLMs genera
 Use the official CLI when collecting live Agent Analytics data:
 
 ```bash
-npx @agent-analytics/cli@0.5.12 insights "$PROJECT_SLUG" --period 7d
-npx @agent-analytics/cli@0.5.12 pages "$PROJECT_SLUG" --since 7d
-npx @agent-analytics/cli@0.5.12 funnel "$PROJECT_SLUG" --steps "page_view,$PROXY_EVENT,$PRIMARY_EVENT" --since 7d
-npx @agent-analytics/cli@0.5.12 events "$PROJECT_SLUG" --event "$PROXY_EVENT" --days 7 --limit 50
-npx @agent-analytics/cli@0.5.12 events "$PROJECT_SLUG" --event "$PRIMARY_EVENT" --days 7 --limit 50
-npx @agent-analytics/cli@0.5.12 experiments list "$PROJECT_SLUG"
+npx @agent-analytics/cli@0.5.14 insights "$PROJECT_SLUG" --period 7d
+npx @agent-analytics/cli@0.5.14 pages "$PROJECT_SLUG" --since 7d
+npx @agent-analytics/cli@0.5.14 funnel "$PROJECT_SLUG" --steps "page_view,$PROXY_EVENT,$PRIMARY_EVENT" --since 7d
+npx @agent-analytics/cli@0.5.14 events "$PROJECT_SLUG" --event "$PROXY_EVENT" --days 7 --limit 50
+npx @agent-analytics/cli@0.5.14 events "$PROJECT_SLUG" --event "$PRIMARY_EVENT" --days 7 --limit 50
+npx @agent-analytics/cli@0.5.14 experiments list "$PROJECT_SLUG"
 ```
 
 If login is needed, prefer the regular `agent-analytics` skill's browser approval or detached login guidance.
