@@ -59,15 +59,32 @@ The workflow is based on the public template repo:
 The skill is intentionally pinned to the official CLI invocation:
 
 ```bash
-npx @agent-analytics/cli@0.5.15 <command>
+npx @agent-analytics/cli@0.5.16 <command>
 ```
 
 Agent environments should prefer that exact `npx` form over raw API calls, repo-local scripts, or an already-installed binary unless the user explicitly asks for a different interface.
 
-The published skill now assumes browser approval or detached finish-code login first:
+The published skill now runs website analysis before installing events:
 
 ```text
-Set up Agent Analytics for this project. Install it here if needed. If browser approval is needed, open it and wait for me. I will sign in with Google or GitHub and approve it. Then create the project, add tracking and key events, and verify the first event.
+Set up Agent Analytics for this project. Run the website analysis first so you know what my agent should track first. If browser approval is needed, open it and wait for me. I will sign in with Google or GitHub and approve it. Then create the project, install only the high-priority minimum viable instrumentation, and verify the first useful recommended event.
+```
+
+The setup flow starts with:
+
+```bash
+npx @agent-analytics/cli@0.5.16 scan <url> --json
+```
+
+The skill uses the analysis output as analytics judgment: install only high-priority `minimum_viable_instrumentation`, explain what each event enables, and avoid generic tracking.
+
+Recommendations include practical `implementation_hint` guidance. Agents should map those hints to tracker.js capabilities instead of inventing generic instrumentation: use `data-aa-event` for named click intent, `data-aa-impression` for meaningful section exposure, `window.aa.track(...)` for computed client state, and server-side tracking for durable outcomes such as completed signup. Do not add custom duplicates for automatic tracker signals like `page_view`, path, referrer, UTMs, device/browser fields, country, session IDs, session count, days since first visit, or first-touch attribution.
+
+For OpenClaw and similar managed runtimes, store CLI auth in a persistent workspace path instead of the default home config path:
+
+```bash
+export AGENT_ANALYTICS_CONFIG_DIR="$PWD/.openclaw/agent-analytics"
+npx @agent-analytics/cli@0.5.16 auth status
 ```
 
 Normal setup does not require an API key. Raw API keys remain an advanced/manual fallback for custom direct HTTP runtimes.

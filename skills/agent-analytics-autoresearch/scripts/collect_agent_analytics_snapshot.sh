@@ -25,24 +25,24 @@ run_snapshot_command() {
 }
 
 run_snapshot_command "$OUTPUT_DIR/insights.txt" \
-  npx @agent-analytics/cli@0.5.15 insights "$PROJECT_SLUG" --period 7d
+  npx @agent-analytics/cli@0.5.16 insights "$PROJECT_SLUG" --period 7d
 run_snapshot_command "$OUTPUT_DIR/pages.txt" \
-  npx @agent-analytics/cli@0.5.15 pages "$PROJECT_SLUG" --since 7d
+  npx @agent-analytics/cli@0.5.16 pages "$PROJECT_SLUG" --since 7d
 run_snapshot_command "$OUTPUT_DIR/funnel.txt" \
-  npx @agent-analytics/cli@0.5.15 funnel "$PROJECT_SLUG" \
+  npx @agent-analytics/cli@0.5.16 funnel "$PROJECT_SLUG" \
   --steps "page_view,$PROXY_EVENT,$PRIMARY_EVENT" \
   --since 7d
 run_snapshot_command "$OUTPUT_DIR/${PROXY_EVENT}-events.txt" \
-  npx @agent-analytics/cli@0.5.15 events "$PROJECT_SLUG" \
+  npx @agent-analytics/cli@0.5.16 events "$PROJECT_SLUG" \
   --event "$PROXY_EVENT" \
   --days 7 \
   --limit 50
 run_snapshot_command "$OUTPUT_DIR/${PRIMARY_EVENT}-events.txt" \
-  npx @agent-analytics/cli@0.5.15 events "$PROJECT_SLUG" \
+  npx @agent-analytics/cli@0.5.16 events "$PROJECT_SLUG" \
   --event "$PRIMARY_EVENT" \
   --days 7 \
   --limit 50
 run_snapshot_command "$OUTPUT_DIR/experiments.txt" \
-  npx @agent-analytics/cli@0.5.15 experiments list "$PROJECT_SLUG"
+  npx @agent-analytics/cli@0.5.16 experiments list "$PROJECT_SLUG"
 
 printf 'Saved Agent Analytics snapshot to %s\n' "$OUTPUT_DIR"

@@ -1,7 +1,7 @@
 ---
 name: agent-analytics-autoresearch
 description: "Run an autoresearch-style growth loop for landing pages, onboarding, pricing, and experiment candidates. Collect or read analytics snapshots, preserve product truth, generate/critique/synthesize variants, blind-rank with Borda scoring, and output two review-ready A/B test variants. Works with any analytics data; best with Agent Analytics CLI/API."
-version: 1.0.3
+version: 1.0.4
 author: dannyshmueli
 license: MIT
 repository: https://github.com/Agent-Analytics/agent-analytics-skill
@@ -127,12 +127,12 @@ The outer loop prevents the LLM panel from becoming the final judge. LLMs genera
 Use the official CLI when collecting live Agent Analytics data:
 
 ```bash
-npx @agent-analytics/cli@0.5.15 insights "$PROJECT_SLUG" --period 7d
-npx @agent-analytics/cli@0.5.15 pages "$PROJECT_SLUG" --since 7d
-npx @agent-analytics/cli@0.5.15 funnel "$PROJECT_SLUG" --steps "page_view,$PROXY_EVENT,$PRIMARY_EVENT" --since 7d
-npx @agent-analytics/cli@0.5.15 events "$PROJECT_SLUG" --event "$PROXY_EVENT" --days 7 --limit 50
-npx @agent-analytics/cli@0.5.15 events "$PROJECT_SLUG" --event "$PRIMARY_EVENT" --days 7 --limit 50
-npx @agent-analytics/cli@0.5.15 experiments list "$PROJECT_SLUG"
+npx @agent-analytics/cli@0.5.16 insights "$PROJECT_SLUG" --period 7d
+npx @agent-analytics/cli@0.5.16 pages "$PROJECT_SLUG" --since 7d
+npx @agent-analytics/cli@0.5.16 funnel "$PROJECT_SLUG" --steps "page_view,$PROXY_EVENT,$PRIMARY_EVENT" --since 7d
+npx @agent-analytics/cli@0.5.16 events "$PROJECT_SLUG" --event "$PROXY_EVENT" --days 7 --limit 50
+npx @agent-analytics/cli@0.5.16 events "$PROJECT_SLUG" --event "$PRIMARY_EVENT" --days 7 --limit 50
+npx @agent-analytics/cli@0.5.16 experiments list "$PROJECT_SLUG"
 ```
 
 If login is needed, prefer the regular `agent-analytics` skill's browser approval or detached login guidance.
