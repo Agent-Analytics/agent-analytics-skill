@@ -62,6 +62,8 @@ The loop needs:
 
 Agent Analytics is preferred, but not required. Accept any evidence source: Agent Analytics CLI/API, PostHog, GA4, Mixpanel, SQL, CSV exports, product logs, dashboard screenshots summarized by the user, or hand-written notes.
 
+When Agent Analytics is the evidence source, use project context as the self-improving product memory for the loop. Read `context get <project>` before collecting a snapshot, fold `project_context` into the product truth and metric definitions, and keep activation/event meaning separate per project or domain. After a human correction, scanner result, completed experiment, or repeated measured finding, update context only with durable product truth. Save activation definitions, event meanings, stable goals, and confirmed interpretations; skip weekly numbers, temporary spikes, pasted reports, PII, and unconfirmed guesses.
+
 ## Quick Start
 
 If the user already has a repo or run folder, work there. Otherwise initialize a run:
@@ -127,15 +129,23 @@ The outer loop prevents the LLM panel from becoming the final judge. LLMs genera
 Use the official CLI when collecting live Agent Analytics data:
 
 ```bash
-npx --yes @agent-analytics/cli@0.5.19 insights "$PROJECT_SLUG" --period 7d
-npx --yes @agent-analytics/cli@0.5.19 pages "$PROJECT_SLUG" --since 7d
-npx --yes @agent-analytics/cli@0.5.19 funnel "$PROJECT_SLUG" --steps "page_view,$PROXY_EVENT,$PRIMARY_EVENT" --since 7d
-npx --yes @agent-analytics/cli@0.5.19 events "$PROJECT_SLUG" --event "$PROXY_EVENT" --days 7 --limit 50
-npx --yes @agent-analytics/cli@0.5.19 events "$PROJECT_SLUG" --event "$PRIMARY_EVENT" --days 7 --limit 50
-npx --yes @agent-analytics/cli@0.5.19 experiments list "$PROJECT_SLUG"
+npx --yes @agent-analytics/cli@0.5.20 insights "$PROJECT_SLUG" --period 7d
+npx --yes @agent-analytics/cli@0.5.20 pages "$PROJECT_SLUG" --since 7d
+npx --yes @agent-analytics/cli@0.5.20 funnel "$PROJECT_SLUG" --steps "page_view,$PROXY_EVENT,$PRIMARY_EVENT" --since 7d
+npx --yes @agent-analytics/cli@0.5.20 events "$PROJECT_SLUG" --event "$PROXY_EVENT" --days 7 --limit 50
+npx --yes @agent-analytics/cli@0.5.20 events "$PROJECT_SLUG" --event "$PRIMARY_EVENT" --days 7 --limit 50
+npx --yes @agent-analytics/cli@0.5.20 experiments list "$PROJECT_SLUG"
 ```
 
 If login is needed, prefer the regular `agent-analytics` skill's browser approval or detached login guidance.
+
+Before interpreting the snapshot, also read the compact project memory:
+
+```bash
+npx --yes @agent-analytics/cli@0.5.20 context get "$PROJECT_SLUG"
+```
+
+If the autoresearch run reveals durable product truth that should guide future analytics, use the regular `agent-analytics` skill's project context workflow to read the existing context, merge the compact update, and write it back. Do not store raw round notes or time-bound metric values as project context.
 
 ## Scoring
 

@@ -5,15 +5,26 @@ import { join } from 'node:path';
 
 const root = process.cwd();
 const skill = readFileSync(join(root, 'skills/agent-analytics/SKILL.md'), 'utf8');
+const autoresearchSkill = readFileSync(join(root, 'skills/agent-analytics-autoresearch/SKILL.md'), 'utf8');
 const readme = readFileSync(join(root, 'README.md'), 'utf8');
 
 describe('agent-analytics skill contract', () => {
-  it('pins the official CLI to 0.5.19 everywhere', () => {
-    assert.match(skill, /version: 4\.0\.19/);
-    assert.ok(skill.includes('npx --yes @agent-analytics/cli@0.5.19'));
-    assert.ok(readme.includes('npx --yes @agent-analytics/cli@0.5.19'));
+  it('pins the official CLI to 0.5.20 everywhere', () => {
+    assert.match(skill, /version: 4\.0\.20/);
+    assert.ok(skill.includes('npx --yes @agent-analytics/cli@0.5.20'));
+    assert.ok(readme.includes('npx --yes @agent-analytics/cli@0.5.20'));
     assert.equal(/@agent-analytics\/cli@0\.5\.(12|13|14|15)/.test(skill), false);
     assert.equal(/@agent-analytics\/cli@0\.5\.(12|13|14|15)/.test(readme), false);
+  });
+
+  it('documents the paid upgrade handoff without raw API-key fallback', () => {
+    assert.match(skill, /Paid-tier handoff/i);
+    assert.match(skill, /PRO_REQUIRED/i);
+    assert.match(skill, /upgrade-link --detached/i);
+    assert.match(skill, /upgrade-link --wait/i);
+    assert.match(skill, /whoami/i);
+    assert.equal(/login --token/i.test(skill), false);
+    assert.equal(/login --token/i.test(readme), false);
   });
 
   it('requires analysis-first setup before installing events', () => {
@@ -64,9 +75,25 @@ describe('agent-analytics skill contract', () => {
     assert.match(skill, /event_name/i);
     assert.match(skill, /Keep .*short/i);
     assert.match(skill, /self-improving memory/i);
+    assert.match(skill, /At the start of any project-specific analysis/i);
+    assert.match(skill, /context set.*replaces the stored context/i);
+    assert.match(skill, /Always read the existing context first/i);
+    assert.match(skill, /Save durable product truth/i);
+    assert.match(skill, /Skip noisy findings/i);
+    assert.match(skill, /Do not invent unsupported fields/i);
     assert.match(skill, /multi-project or multi-domain/i);
     assert.match(skill, /trial signup plus first item created/i);
     assert.match(skill, /teammate invited/i);
     assert.match(skill, /next analysis starts smarter/i);
+  });
+
+  it('teaches Autoresearch to use project context as self-improving product memory', () => {
+    assert.match(autoresearchSkill, /context get <project>/i);
+    assert.match(autoresearchSkill, /project_context/i);
+    assert.match(autoresearchSkill, /self-improving product memory/i);
+    assert.match(autoresearchSkill, /durable product truth/i);
+    assert.match(autoresearchSkill, /skip weekly numbers/i);
+    assert.match(autoresearchSkill, /Do not store raw round notes/i);
+    assert.match(readme, /Autoresearch should read Project Context before a snapshot/i);
   });
 });
