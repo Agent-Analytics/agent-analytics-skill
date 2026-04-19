@@ -32,6 +32,7 @@ The regular Agent Analytics skill teaches an agent how to use the official Agent
 - inspect traffic and events
 - connect entry pages, exit pages, and goals with bounded session paths
 - analyze funnels and retention
+- store compact project goals, activation events, and event-name glossary context
 - run experiments
 
 Use this when you want the agent to operate Agent Analytics end-to-end.
@@ -59,7 +60,7 @@ The workflow is based on the public template repo:
 The skill is intentionally pinned to the official CLI invocation:
 
 ```bash
-npx @agent-analytics/cli@0.5.16 <command>
+npx --yes @agent-analytics/cli@0.5.19 <command>
 ```
 
 Agent environments should prefer that exact `npx` form over raw API calls, repo-local scripts, or an already-installed binary unless the user explicitly asks for a different interface.
@@ -73,7 +74,7 @@ Set up Agent Analytics for this project. Run the website analysis first so you k
 The setup flow starts with:
 
 ```bash
-npx @agent-analytics/cli@0.5.16 scan <url> --json
+npx --yes @agent-analytics/cli@0.5.19 scan <url> --json
 ```
 
 The skill uses the analysis output as analytics judgment: install only high-priority `minimum_viable_instrumentation`, explain what each event enables, and avoid generic tracking.
@@ -84,7 +85,7 @@ For OpenClaw and similar managed runtimes, store CLI auth in a persistent worksp
 
 ```bash
 export AGENT_ANALYTICS_CONFIG_DIR="$PWD/.openclaw/agent-analytics"
-npx @agent-analytics/cli@0.5.16 auth status
+npx --yes @agent-analytics/cli@0.5.19 auth status
 ```
 
 Normal setup does not require an API key. Raw API keys remain an advanced/manual fallback for custom direct HTTP runtimes.

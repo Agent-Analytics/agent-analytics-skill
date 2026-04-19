@@ -8,10 +8,10 @@ const skill = readFileSync(join(root, 'skills/agent-analytics/SKILL.md'), 'utf8'
 const readme = readFileSync(join(root, 'README.md'), 'utf8');
 
 describe('agent-analytics skill contract', () => {
-  it('pins the official CLI to 0.5.16 everywhere', () => {
+  it('pins the official CLI to 0.5.19 everywhere', () => {
     assert.match(skill, /version: 4\.0\.19/);
-    assert.ok(skill.includes('npx @agent-analytics/cli@0.5.16'));
-    assert.ok(readme.includes('npx @agent-analytics/cli@0.5.16'));
+    assert.ok(skill.includes('npx --yes @agent-analytics/cli@0.5.19'));
+    assert.ok(readme.includes('npx --yes @agent-analytics/cli@0.5.19'));
     assert.equal(/@agent-analytics\/cli@0\.5\.(12|13|14|15)/.test(skill), false);
     assert.equal(/@agent-analytics\/cli@0\.5\.(12|13|14|15)/.test(readme), false);
   });
@@ -53,5 +53,15 @@ describe('agent-analytics skill contract', () => {
     assert.match(skill, /Give your agent analytics judgment/i);
     assert.match(skill, /install only high-priority/i);
     assert.match(skill, /explain what each event enables/i);
+  });
+
+  it('teaches compact project context and event-name glossary upkeep', () => {
+    assert.match(skill, /context get/i);
+    assert.match(skill, /context set/i);
+    assert.match(skill, /project_context/i);
+    assert.match(skill, /properties <project>/i);
+    assert.match(skill, /properties-received <project>/i);
+    assert.match(skill, /event_name/i);
+    assert.match(skill, /Keep .*short/i);
   });
 });
