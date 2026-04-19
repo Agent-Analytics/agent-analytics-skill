@@ -6,6 +6,14 @@ import { join } from 'node:path';
 const root = process.cwd();
 const skill = readFileSync(join(root, 'skills/agent-analytics/SKILL.md'), 'utf8');
 const autoresearchSkill = readFileSync(join(root, 'skills/agent-analytics-autoresearch/SKILL.md'), 'utf8');
+const autoresearchBriefTemplate = readFileSync(
+  join(root, 'skills/agent-analytics-autoresearch/references/brief-template.md'),
+  'utf8',
+);
+const autoresearchSnapshotScript = readFileSync(
+  join(root, 'skills/agent-analytics-autoresearch/scripts/collect_agent_analytics_snapshot.sh'),
+  'utf8',
+);
 const readme = readFileSync(join(root, 'README.md'), 'utf8');
 
 describe('agent-analytics skill contract', () => {
@@ -13,8 +21,24 @@ describe('agent-analytics skill contract', () => {
     assert.match(skill, /version: 4\.0\.20/);
     assert.ok(skill.includes('npx --yes @agent-analytics/cli@0.5.20'));
     assert.ok(readme.includes('npx --yes @agent-analytics/cli@0.5.20'));
-    assert.equal(/@agent-analytics\/cli@0\.5\.(12|13|14|15)/.test(skill), false);
-    assert.equal(/@agent-analytics\/cli@0\.5\.(12|13|14|15)/.test(readme), false);
+    assert.match(autoresearchSkill, /version: 1\.0\.5/);
+    assert.ok(autoresearchSkill.includes('npx --yes @agent-analytics/cli@0.5.20'));
+    assert.ok(autoresearchBriefTemplate.includes('npx --yes @agent-analytics/cli@0.5.20'));
+    assert.ok(autoresearchSnapshotScript.includes('npx --yes @agent-analytics/cli@0.5.20'));
+    assert.equal(/@agent-analytics\/cli@0\.5\.(12|13|14|15|16|17|18|19)/.test(skill), false);
+    assert.equal(/@agent-analytics\/cli@0\.5\.(12|13|14|15|16|17|18|19)/.test(readme), false);
+    assert.equal(
+      /@agent-analytics\/cli@0\.5\.(12|13|14|15|16|17|18|19)/.test(autoresearchSkill),
+      false,
+    );
+    assert.equal(
+      /@agent-analytics\/cli@0\.5\.(12|13|14|15|16|17|18|19)/.test(autoresearchBriefTemplate),
+      false,
+    );
+    assert.equal(
+      /@agent-analytics\/cli@0\.5\.(12|13|14|15|16|17|18|19)/.test(autoresearchSnapshotScript),
+      false,
+    );
   });
 
   it('documents the paid upgrade handoff without raw API-key fallback', () => {
