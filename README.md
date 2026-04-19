@@ -33,6 +33,7 @@ The regular Agent Analytics skill teaches an agent how to use the official Agent
 - connect entry pages, exit pages, and goals with bounded session paths
 - analyze funnels and retention
 - store compact project goals, activation events, and event-name glossary context
+- keep that context as a per-project, self-improving memory after scans, instrumentation, and human corrections
 - run experiments
 
 Use this when you want the agent to operate Agent Analytics end-to-end.

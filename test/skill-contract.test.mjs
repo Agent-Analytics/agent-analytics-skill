@@ -63,5 +63,10 @@ describe('agent-analytics skill contract', () => {
     assert.match(skill, /properties-received <project>/i);
     assert.match(skill, /event_name/i);
     assert.match(skill, /Keep .*short/i);
+    assert.match(skill, /self-improving memory/i);
+    assert.match(skill, /multi-project or multi-domain/i);
+    assert.match(skill, /trial signup plus first item created/i);
+    assert.match(skill, /teammate invited/i);
+    assert.match(skill, /next analysis starts smarter/i);
   });
 });

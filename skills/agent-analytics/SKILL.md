@@ -210,6 +210,16 @@ Use `context get` and `context set` when the product has custom goals, activatio
 
 Before setting or refreshing context, inspect current event names with `properties <project>` or `properties-received <project>`. Glossary entries must be tied to `event_name` so future agents can connect human product language to actual tracked events.
 
+Treat project context as compact self-improving memory close to the analytics data. After website analysis, first instrumentation, funnel work, retention review, or a human correction, update the context when you learn what activation means, which events matter, or what a product term means in this project.
+
+For multi-project or multi-domain work, keep context separate per project. Do not reuse one activation definition across a product app, directory site, docs site, landing page, or lead-generation domain unless the human explicitly says they share the same meaning. Examples:
+
+- A trial product might define activation as trial signup plus first item created.
+- A team product might define activation as signup plus teammate invited.
+- A directory or marketing domain might define activation as a qualified visitor clicking through to the product or becoming a lead.
+
+If the meaning is unclear, ask a short confirmation question before updating. If it is clear from the user's instruction or a Product Growth Scanner result, update the context so the next analysis starts smarter.
+
 Example:
 
 ```bash
