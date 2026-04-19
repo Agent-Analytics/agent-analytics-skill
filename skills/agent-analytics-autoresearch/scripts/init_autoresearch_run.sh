@@ -9,7 +9,7 @@ mkdir -p "$RUN_DIR/data"
 
 cp "$SKILL_DIR/references/brief-template.md" "$RUN_DIR/brief.md"
 cp "$SKILL_DIR/references/final-variants-template.md" "$RUN_DIR/final_variants.md"
-cp "$SKILL_DIR/references/results-header.tsv" "$RUN_DIR/results.tsv"
+cp "$SKILL_DIR/references/results-header.txt" "$RUN_DIR/results.tsv"
 touch "$RUN_DIR/scratch.md"
 
 printf 'Created autoresearch run at %s\n' "$RUN_DIR"

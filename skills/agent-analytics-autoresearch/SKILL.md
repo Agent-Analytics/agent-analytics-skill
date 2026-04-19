@@ -1,7 +1,7 @@
 ---
 name: agent-analytics-autoresearch
 description: "Run an autoresearch-style growth loop for landing pages, onboarding, pricing, and experiment candidates. Collect or read analytics snapshots, preserve product truth, generate/critique/synthesize variants, blind-rank with Borda scoring, and output two review-ready A/B test variants. Works with any analytics data; best with Agent Analytics CLI/API."
-version: 1.0.5
+version: 1.0.6
 author: dannyshmueli
 license: MIT
 repository: https://github.com/Agent-Analytics/agent-analytics-skill
@@ -93,7 +93,7 @@ Load these files only when needed:
 - `references/program.md` - exact loop instructions.
 - `references/brief-template.md` - project brief template.
 - `references/final-variants-template.md` - final output template.
-- `references/results-header.tsv` - exact `results.tsv` header.
+- `references/results-header.txt` - exact `results.tsv` header.
 
 ## Loop Shape
 

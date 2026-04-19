@@ -14,6 +14,10 @@ const autoresearchSnapshotScript = readFileSync(
   join(root, 'skills/agent-analytics-autoresearch/scripts/collect_agent_analytics_snapshot.sh'),
   'utf8',
 );
+const autoresearchInitScript = readFileSync(
+  join(root, 'skills/agent-analytics-autoresearch/scripts/init_autoresearch_run.sh'),
+  'utf8',
+);
 const readme = readFileSync(join(root, 'README.md'), 'utf8');
 
 describe('agent-analytics skill contract', () => {
@@ -21,7 +25,7 @@ describe('agent-analytics skill contract', () => {
     assert.match(skill, /version: 4\.0\.20/);
     assert.ok(skill.includes('npx --yes @agent-analytics/cli@0.5.20'));
     assert.ok(readme.includes('npx --yes @agent-analytics/cli@0.5.20'));
-    assert.match(autoresearchSkill, /version: 1\.0\.5/);
+    assert.match(autoresearchSkill, /version: 1\.0\.6/);
     assert.ok(autoresearchSkill.includes('npx --yes @agent-analytics/cli@0.5.20'));
     assert.ok(autoresearchBriefTemplate.includes('npx --yes @agent-analytics/cli@0.5.20'));
     assert.ok(autoresearchSnapshotScript.includes('npx --yes @agent-analytics/cli@0.5.20'));
@@ -118,6 +122,10 @@ describe('agent-analytics skill contract', () => {
     assert.match(autoresearchSkill, /durable product truth/i);
     assert.match(autoresearchSkill, /skip weekly numbers/i);
     assert.match(autoresearchSkill, /Do not store raw round notes/i);
+    assert.match(autoresearchSkill, /references\/results-header\.txt/i);
+    assert.doesNotMatch(autoresearchSkill, /references\/results-header\.tsv/i);
+    assert.match(autoresearchInitScript, /references\/results-header\.txt/i);
+    assert.doesNotMatch(autoresearchInitScript, /references\/results-header\.tsv/i);
     assert.match(readme, /Autoresearch should read Project Context before a snapshot/i);
   });
 });
