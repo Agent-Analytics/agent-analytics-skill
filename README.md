@@ -34,6 +34,7 @@ The regular Agent Analytics skill teaches an agent how to use the official Agent
 - analyze funnels and retention
 - store compact project goals, activation events, and event-name glossary context
 - keep that context as a per-project, self-improving memory after scans, instrumentation, analysis, and human corrections
+- scan additional public websites the user owns so the agent can find useful data that is not being collected yet
 - read existing context before analysis, merge before writes, and save only durable product truth instead of noisy metric findings
 - run experiments
 
@@ -75,13 +76,15 @@ The published skill now runs website analysis before installing events:
 Set up Agent Analytics for this project. Run the website analysis first so you know what my agent should track first. If browser approval is needed, open it and wait for me. I will sign in with Google or GitHub and approve it. Then create the project, install only the high-priority minimum viable instrumentation, and verify the first useful recommended event.
 ```
 
+For deeper product analysis, the skill should also scan additional public websites the user owns, such as docs, pricing, support, signup, changelog, launch, or demo pages. The scanner is not only a way to feed the agent existing analytics data; it gives the agent product eyes on data that may not be collected yet.
+
 The setup flow starts with:
 
 ```bash
 npx --yes @agent-analytics/cli@0.5.20 scan <url> --json
 ```
 
-The skill uses the analysis output as analytics judgment: install only high-priority `minimum_viable_instrumentation`, explain what each event enables, and avoid generic tracking.
+The skill uses the analysis output as analytics judgment: install only high-priority `minimum_viable_instrumentation`, explain what each event enables, and avoid generic tracking. When multiple owned surfaces are scanned, compare `current_blindspots` and `minimum_viable_instrumentation` before choosing what to instrument first.
 
 Recommendations include practical `implementation_hint` guidance. Agents should map those hints to tracker.js capabilities instead of inventing generic instrumentation: use `data-aa-event` for named click intent, `data-aa-impression` for meaningful section exposure, `window.aa.track(...)` for computed client state, and server-side tracking for durable outcomes such as completed signup. Do not add custom duplicates for automatic tracker signals like `page_view`, path, referrer, UTMs, device/browser fields, country, session IDs, session count, days since first visit, or first-touch attribution.
 
@@ -100,7 +103,7 @@ When a free account reaches a Pro-only analytics command, the skill should run t
 npx --yes @agent-analytics/cli@0.5.20 upgrade-link --detached --reason "<why Pro is needed>" --command "<blocked command>"
 ```
 
-The CLI prints an app-domain payment handoff for the human. The agent should run `whoami` after payment, then rerun the blocked command once Pro is active.
+The CLI prints an app-domain payment handoff for the human. The dashboard page may ask the human to sign in, confirms the same account as the CLI, shows the blocked command and reason, and then opens Lemon Squeezy. The agent should run `whoami` after payment, then rerun the blocked command once Pro is active.
 
 For direct MCP setup, use the install guides on the docs site.
 

@@ -50,6 +50,10 @@ describe('agent-analytics skill contract', () => {
     assert.match(skill, /PRO_REQUIRED/i);
     assert.match(skill, /upgrade-link --detached/i);
     assert.match(skill, /upgrade-link --wait/i);
+    assert.match(skill, /dashboard page first/i);
+    assert.match(skill, /confirms the same account as the CLI/i);
+    assert.match(skill, /blocked command and reason/i);
+    assert.match(readme, /confirms the same account as the CLI/i);
     assert.match(skill, /whoami/i);
     assert.equal(/login --token/i.test(skill), false);
     assert.equal(/login --token/i.test(readme), false);
@@ -61,6 +65,16 @@ describe('agent-analytics skill contract', () => {
     assert.match(skill, /do not guess/i);
     assert.match(skill, /do not overtrack/i);
     assert.match(skill, /do not install generic events/i);
+  });
+
+  it('teaches agents to scan additional owned surfaces for uncollected data', () => {
+    assert.match(skill, /additional public websites the user owns/i);
+    assert.match(skill, /product eyes/i);
+    assert.match(skill, /not be collecting yet/i);
+    assert.match(skill, /Only scan sites the user owns/i);
+    assert.match(skill, /Compare `current_blindspots` and `minimum_viable_instrumentation`/i);
+    assert.match(readme, /scan additional public websites the user owns/i);
+    assert.match(readme, /data that may not be collected yet/i);
   });
 
   it('documents persistent OpenClaw auth storage', () => {

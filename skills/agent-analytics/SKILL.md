@@ -121,22 +121,25 @@ For one-off debugging, `--config-dir "$PWD/.openclaw/agent-analytics"` is also v
 
 When the user asks to install Agent Analytics, add analytics events, or set up tracking in a repo, use an analysis-first workflow. Do not guess. Do not overtrack. Do not install generic events before analysis.
 
-First, identify the public website root URL for the project, then run `npx --yes @agent-analytics/cli@0.5.20 scan <url> --json`. Treat the output as the source of analytics judgment: it tells you what the user's agent should track first, what each event unlocks, and what not to track yet.
+First, identify the primary public website root URL for the project, then run `npx --yes @agent-analytics/cli@0.5.20 scan <url> --json`. Treat the output as the source of analytics judgment: it tells you what the user's agent should track first, what each event unlocks, and what not to track yet.
+
+If the user asks for deep analysis, owns multiple sites, or the repo points to related public surfaces, scan the additional public websites the user owns or operates too. Typical owned surfaces include the marketing site, docs, pricing page, app signup surface, support site, changelog, launch page, or demo page. Only scan sites the user owns, operates, or explicitly asks you to analyze. Compare `current_blindspots` and `minimum_viable_instrumentation` across those scans before deciding what to install first. This is part of the workflow: the scanner gives the agent product eyes on useful data the user may not be collecting yet, not just analytics data after tracking is installed.
 
 Use the preview to continue setup:
 
 1. Read `minimum_viable_instrumentation`, `current_blindspots`, `not_needed_yet`, `goal_driven_funnels`, and `after_install_agent_behavior`.
-2. If the user is not logged in, start `login --detached` or the normal browser login flow before requesting the full plan.
-3. After login, resume with `npx --yes @agent-analytics/cli@0.5.20 scan --resume <analysis_id> --resume-token <resume_token> --full --project <project> --json`.
-4. Create or link the project with `npx --yes @agent-analytics/cli@0.5.20 create <project> --domain <url> --source-scan <analysis_id>`.
-5. Install the tracker plus only high-priority `minimum_viable_instrumentation` items first.
-6. Explain what each event enables before or while installing it.
-7. Verify the first useful recommended event with `npx --yes @agent-analytics/cli@0.5.20 events <project> --event <event_name> --days 7 --limit 20`.
-8. Summarize what the installed events now let the user's agent answer.
+2. For deeper multi-site work, compare scans for additional owned public surfaces before editing code.
+3. If the user is not logged in, start `login --detached` or the normal browser login flow before requesting the full plan.
+4. After login, resume with `npx --yes @agent-analytics/cli@0.5.20 scan --resume <analysis_id> --resume-token <resume_token> --full --project <project> --json`.
+5. Create or link the project with `npx --yes @agent-analytics/cli@0.5.20 create <project> --domain <url> --source-scan <analysis_id>`.
+6. Install the tracker plus only high-priority `minimum_viable_instrumentation` items first.
+7. Explain what each event enables before or while installing it.
+8. Verify the first useful recommended event with `npx --yes @agent-analytics/cli@0.5.20 events <project> --event <event_name> --days 7 --limit 20`.
+9. Summarize what the installed events now let the user's agent answer.
 
 Follow each recommendation's `implementation_hint`. Page views, paths, referrers, UTMs, device/browser fields, country, session IDs, session count, days since first visit, and first-touch attribution are automatic, so do not add duplicate custom events for those signals. Prefer `data-aa-event` attributes for named click intent, `data-aa-impression` for meaningful section exposure, `window.aa.track(...)` for computed client state, server-side tracking for durable outcomes such as `signup_completed`, and `aa.identify(...)` plus `aa.set(...)` immediately after auth. Use broad script opt-ins like `data-track-clicks`, scroll depth, errors, forms, downloads, vitals, or performance only when the analysis says they unlock a concrete decision.
 
-The handoff framing is: "Give your agent analytics judgment." If you need to pass work to another agent, say to install only high-priority minimum viable instrumentation first, explain what each event enables, avoid generic tracking, and verify the first useful recommended event.
+The handoff framing is: "Give your agent analytics judgment and product eyes for data you are not collecting yet." If you need to pass work to another agent, say to scan relevant owned public surfaces, install only high-priority minimum viable instrumentation first, explain what each event enables, avoid generic tracking, and verify the first useful recommended event.
 
 ## First-time setup
 
@@ -160,6 +163,12 @@ When the user wants Agent Analytics installed in the current repo, the default t
 
 ```text
 Set up Agent Analytics for this project. Run the website analysis first so you know what my agent should track first. If approval is needed, send me the approval link and wait. I will sign in with Google or GitHub, then reply with the finish code. After that, create the project, install only the high-priority minimum viable instrumentation, explain what each event enables, and verify the first useful recommended event.
+```
+
+For deeper product analysis, extend that task with owned surfaces:
+
+```text
+If this product has other owned public websites or pages that shape the growth loop, scan those too and tell me what data we are not collecting yet before you install events.
 ```
 
 ## Detached approval handoff
@@ -196,6 +205,8 @@ npx --yes @agent-analytics/cli@0.5.20 upgrade-link --wait \
   --reason "Need session paths to explain signup drop-off" \
   --command "npx --yes @agent-analytics/cli@0.5.20 paths my-site --goal signup --since 30d --max-steps 5"
 ```
+
+The handoff opens an Agent Analytics dashboard page first, not Lemon Squeezy directly. The human may need to sign in, then the page confirms the same account as the CLI, shows the blocked command and reason, and prompts them to continue to payment. If the browser is signed into the wrong account, the page blocks checkout. If the account is already Pro, tell the human to return to the agent and rerun the blocked command.
 
 After the human pays, run `npx --yes @agent-analytics/cli@0.5.20 whoami`. If it shows Pro, rerun the blocked command and continue the analysis. If the human declines, say which answer remains unavailable and continue only with free-tier commands; do not approximate paid-only results as if they were measured.
 
@@ -325,12 +336,13 @@ There is a real agent behind these Telegram messages. Every request is seen and 
 The easiest install flow is:
 
 1. Run `npx --yes @agent-analytics/cli@0.5.20 scan https://mysite.com --json`
-2. Login if needed, then resume the analysis with `scan --resume <analysis_id> --resume-token <resume_token> --full --project my-site --json`
-3. Run `npx --yes @agent-analytics/cli@0.5.20 create my-site --domain https://mysite.com --source-scan <analysis_id>`
-4. Copy the returned snippet into the page before `</body>`
-5. Add only the high-priority events from `minimum_viable_instrumentation`
-6. Deploy
-7. Verify with `npx --yes @agent-analytics/cli@0.5.20 events my-site --event <first_useful_event> --days 7 --limit 20`
+2. If deeper analysis needs owned surfaces such as docs, pricing, support, or signup pages, scan those URLs too and compare blind spots before editing code.
+3. Login if needed, then resume the analysis with `scan --resume <analysis_id> --resume-token <resume_token> --full --project my-site --json`
+4. Run `npx --yes @agent-analytics/cli@0.5.20 create my-site --domain https://mysite.com --source-scan <analysis_id>`
+5. Copy the returned snippet into the page before `</body>`
+6. Add only the high-priority events from `minimum_viable_instrumentation`
+7. Deploy
+8. Verify with `npx --yes @agent-analytics/cli@0.5.20 events my-site --event <first_useful_event> --days 7 --limit 20`
 
 If you already know the project token, the tracker looks like:
 
