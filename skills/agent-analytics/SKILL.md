@@ -102,6 +102,7 @@ For one-off debugging, `--config-dir "$PWD/.openclaw/agent-analytics"` is also v
 ## Safe operating rules
 
 - Use only `npx --yes @agent-analytics/cli@0.5.20 ...` for live queries unless the user explicitly requests API, MCP, or a local binary.
+- Anonymous website-analysis preview is available on the web scanner at `https://agentanalytics.sh/analysis/`. In CLI and agent runtimes, sign in first and use `scan` only for sites the user owns or manages as part of Agent Analytics setup.
 - Prefer fixed commands over ad-hoc query construction.
 - Start with `projects`, `all-sites`, `create`, `stats`, `insights`, `events`, `properties`, `context`, `breakdown`, `pages`, `paths`, `heatmap`, `sessions-dist`, `retention`, `funnel`, `experiments`, and `feedback`.
 - Use `query` only when the fixed commands cannot answer the question.
@@ -121,21 +122,22 @@ For one-off debugging, `--config-dir "$PWD/.openclaw/agent-analytics"` is also v
 
 When the user asks to install Agent Analytics, add analytics events, or set up tracking in a repo, use an analysis-first workflow. Do not guess. Do not overtrack. Do not install generic events before analysis.
 
-First, identify the primary public website root URL for the project, then run `npx --yes @agent-analytics/cli@0.5.20 scan <url> --json`. Treat the output as the source of analytics judgment: it tells you what the user's agent should track first, what each event unlocks, and what not to track yet.
+Anonymous website-analysis preview is available on the public web scanner at `https://agentanalytics.sh/analysis/`. In CLI and agent runtimes, sign in first, then run `scan` only for sites the user owns or manages as part of setup.
+
+In CLI setup, first identify the primary public website root URL for the project, start `login --detached` or the normal browser login flow if needed, then create or identify the Agent Analytics project whose `allowed_origins` domain matches the scanned hostname. After that, run `npx --yes @agent-analytics/cli@0.5.20 scan <url> --project <project> --json`. Treat the output as the source of analytics judgment: it tells you what the user's agent should track first, what each event unlocks, and what not to track yet.
 
 If the user asks for deep analysis, owns multiple sites, or the repo points to related public surfaces, scan the additional public websites the user owns or operates too. Typical owned surfaces include the marketing site, docs, pricing page, app signup surface, support site, changelog, launch page, or demo page. Only scan sites the user owns, operates, or explicitly asks you to analyze. Compare `current_blindspots` and `minimum_viable_instrumentation` across those scans before deciding what to install first. This is part of the workflow: the scanner gives the agent product eyes on useful data the user may not be collecting yet, not just analytics data after tracking is installed.
 
 Use the preview to continue setup:
 
-1. Read `minimum_viable_instrumentation`, `current_blindspots`, `not_needed_yet`, `goal_driven_funnels`, and `after_install_agent_behavior`.
-2. For deeper multi-site work, compare scans for additional owned public surfaces before editing code.
-3. If the user is not logged in, start `login --detached` or the normal browser login flow before requesting the full plan.
-4. Create or identify the Agent Analytics project before requesting full analysis; the project must have an `allowed_origins` domain that matches the scanned hostname.
-5. After the project exists, resume with `npx --yes @agent-analytics/cli@0.5.20 scan --resume <analysis_id> --resume-token <resume_token> --full --project <project> --json`.
-6. Install the tracker plus only high-priority `minimum_viable_instrumentation` items first.
-7. Explain what each event enables before or while installing it.
-8. Verify the first useful recommended event with `npx --yes @agent-analytics/cli@0.5.20 events <project> --event <event_name> --days 7 --limit 20`.
-9. Summarize what the installed events now let the user's agent answer.
+1. If the user is not logged in, start `login --detached` or the normal browser login flow.
+2. Create or identify the Agent Analytics project before running CLI website analysis; the project must have an `allowed_origins` domain that matches the scanned hostname.
+3. Run `npx --yes @agent-analytics/cli@0.5.20 scan <url> --project <project> --json` and read `minimum_viable_instrumentation`, `current_blindspots`, `not_needed_yet`, `goal_driven_funnels`, and `after_install_agent_behavior`.
+4. For deeper multi-site work, compare scans for additional owned public surfaces before editing code.
+5. Install the tracker plus only high-priority `minimum_viable_instrumentation` items first.
+6. Explain what each event enables before or while installing it.
+7. Verify the first useful recommended event with `npx --yes @agent-analytics/cli@0.5.20 events <project> --event <event_name> --days 7 --limit 20`.
+8. Summarize what the installed events now let the user's agent answer.
 
 Follow each recommendation's `implementation_hint`. Page views, paths, referrers, UTMs, device/browser fields, country, session IDs, session count, days since first visit, and first-touch attribution are automatic, so do not add duplicate custom events for those signals. Prefer `data-aa-event` attributes for named click intent, `data-aa-impression` for meaningful section exposure, `window.aa.track(...)` for computed client state, server-side tracking for durable outcomes such as `signup_completed`, and `aa.identify(...)` plus `aa.set(...)` immediately after auth. Use broad script opt-ins like `data-track-clicks`, scroll depth, errors, forms, downloads, vitals, or performance only when the analysis says they unlock a concrete decision.
 
@@ -143,11 +145,18 @@ The handoff framing is: "Give your agent analytics judgment and product eyes for
 
 ## First-time setup
 
+For a no-login preview, use the public web scanner:
+
+```text
+https://agentanalytics.sh/analysis/
+```
+
+For CLI and agent runtimes, use the authenticated setup flow:
+
 ```bash
-npx --yes @agent-analytics/cli@0.5.20 scan https://mysite.com --json
 npx --yes @agent-analytics/cli@0.5.20 login --detached
 npx --yes @agent-analytics/cli@0.5.20 create my-site --domain https://mysite.com
-npx --yes @agent-analytics/cli@0.5.20 scan --resume <analysis_id> --resume-token <resume_token> --full --project my-site --json
+npx --yes @agent-analytics/cli@0.5.20 scan https://mysite.com --project my-site --json
 npx --yes @agent-analytics/cli@0.5.20 events my-site --event <first_useful_event> --days 7 --limit 20
 ```
 
@@ -162,7 +171,7 @@ Use `--detached` when the runtime cannot receive a localhost browser callback, w
 When the user wants Agent Analytics installed in the current repo, the default task shape is:
 
 ```text
-Set up Agent Analytics for this project. Run the website analysis first so you know what my agent should track first. If approval is needed, send me the approval link and wait. I will sign in with Google or GitHub, then reply with the finish code. After that, create the project, install only the high-priority minimum viable instrumentation, explain what each event enables, and verify the first useful recommended event.
+Set up Agent Analytics for this project. If approval is needed, send me the approval link and wait. I will sign in with Google or GitHub, then reply with the finish code. After that, create or identify the matching Agent Analytics project, run website analysis for this site so you know what my agent should track first, install only the high-priority minimum viable instrumentation, explain what each event enables, and verify the first useful recommended event.
 ```
 
 For deeper product analysis, extend that task with owned surfaces:

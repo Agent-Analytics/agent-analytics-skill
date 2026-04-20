@@ -70,20 +70,26 @@ npx --yes @agent-analytics/cli@0.5.20 <command>
 
 Agent environments should prefer that exact `npx` form over raw API calls, repo-local scripts, or an already-installed binary unless the user explicitly asks for a different interface.
 
-The published skill now runs website analysis before installing events:
+The published skill now teaches the authenticated CLI setup flow:
 
 ```text
-Set up Agent Analytics for this project. Run the website analysis first so you know what my agent should track first. If browser approval is needed, open it and wait for me. I will sign in with Google or GitHub and approve it. Then create the project, install only the high-priority minimum viable instrumentation, and verify the first useful recommended event.
+Set up Agent Analytics for this project. If browser approval is needed, open it and wait for me. I will sign in with Google or GitHub and approve it. Then create or identify the matching Agent Analytics project, run website analysis for this site so you know what my agent should track first, install only the high-priority minimum viable instrumentation, and verify the first useful recommended event.
 ```
 
 For deeper product analysis, the skill should also scan additional public websites the user owns, such as docs, pricing, support, signup, changelog, launch, or demo pages. The scanner is not only a way to feed the agent existing analytics data; it gives the agent product eyes on data that may not be collected yet.
 
-The setup flow starts with an anonymous preview, then creates or identifies the project before requesting full signed-in analysis. Full scans must name a project whose configured domain matches the scanned hostname:
+Anonymous website-analysis preview is available on the public web scanner:
+
+```text
+https://agentanalytics.sh/analysis/
+```
+
+In CLI and agent runtimes, the setup flow signs in first, then creates or identifies the matching project before running website analysis. Authenticated scans must name a project whose configured domain matches the scanned hostname:
 
 ```bash
-npx --yes @agent-analytics/cli@0.5.20 scan <url> --json
+npx --yes @agent-analytics/cli@0.5.20 login --detached
 npx --yes @agent-analytics/cli@0.5.20 create <project> --domain <url>
-npx --yes @agent-analytics/cli@0.5.20 scan --resume <analysis_id> --resume-token <resume_token> --full --project <project> --json
+npx --yes @agent-analytics/cli@0.5.20 scan <url> --project <project> --json
 ```
 
 The skill uses the analysis output as analytics judgment: install only high-priority `minimum_viable_instrumentation`, explain what each event enables, and avoid generic tracking. When multiple owned surfaces are scanned, compare `current_blindspots` and `minimum_viable_instrumentation` before choosing what to instrument first.

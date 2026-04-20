@@ -60,11 +60,15 @@ describe('agent-analytics skill contract', () => {
   });
 
   it('requires analysis-first setup before installing events', () => {
-    assert.match(skill, /run .*scan <url>/i);
     assert.match(skill, /analysis-first/i);
     assert.match(skill, /do not guess/i);
     assert.match(skill, /do not overtrack/i);
     assert.match(skill, /do not install generic events/i);
+    assert.match(skill, /Anonymous website-analysis preview is available on the public web scanner/i);
+    assert.match(skill, /sign in first/i);
+    assert.match(skill, /scan <url> --project <project> --json/i);
+    assert.match(readme, /Anonymous website-analysis preview is available on the public web scanner/i);
+    assert.match(readme, /scan <url> --project <project> --json/i);
   });
 
   it('teaches agents to scan additional owned surfaces for uncollected data', () => {
