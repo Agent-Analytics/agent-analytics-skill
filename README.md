@@ -78,10 +78,12 @@ Set up Agent Analytics for this project. Run the website analysis first so you k
 
 For deeper product analysis, the skill should also scan additional public websites the user owns, such as docs, pricing, support, signup, changelog, launch, or demo pages. The scanner is not only a way to feed the agent existing analytics data; it gives the agent product eyes on data that may not be collected yet.
 
-The setup flow starts with:
+The setup flow starts with an anonymous preview, then creates or identifies the project before requesting full signed-in analysis. Full scans must name a project whose configured domain matches the scanned hostname:
 
 ```bash
 npx --yes @agent-analytics/cli@0.5.20 scan <url> --json
+npx --yes @agent-analytics/cli@0.5.20 create <project> --domain <url>
+npx --yes @agent-analytics/cli@0.5.20 scan --resume <analysis_id> --resume-token <resume_token> --full --project <project> --json
 ```
 
 The skill uses the analysis output as analytics judgment: install only high-priority `minimum_viable_instrumentation`, explain what each event enables, and avoid generic tracking. When multiple owned surfaces are scanned, compare `current_blindspots` and `minimum_viable_instrumentation` before choosing what to instrument first.

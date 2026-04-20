@@ -130,8 +130,8 @@ Use the preview to continue setup:
 1. Read `minimum_viable_instrumentation`, `current_blindspots`, `not_needed_yet`, `goal_driven_funnels`, and `after_install_agent_behavior`.
 2. For deeper multi-site work, compare scans for additional owned public surfaces before editing code.
 3. If the user is not logged in, start `login --detached` or the normal browser login flow before requesting the full plan.
-4. After login, resume with `npx --yes @agent-analytics/cli@0.5.20 scan --resume <analysis_id> --resume-token <resume_token> --full --project <project> --json`.
-5. Create or link the project with `npx --yes @agent-analytics/cli@0.5.20 create <project> --domain <url> --source-scan <analysis_id>`.
+4. Create or identify the Agent Analytics project before requesting full analysis; the project must have an `allowed_origins` domain that matches the scanned hostname.
+5. After the project exists, resume with `npx --yes @agent-analytics/cli@0.5.20 scan --resume <analysis_id> --resume-token <resume_token> --full --project <project> --json`.
 6. Install the tracker plus only high-priority `minimum_viable_instrumentation` items first.
 7. Explain what each event enables before or while installing it.
 8. Verify the first useful recommended event with `npx --yes @agent-analytics/cli@0.5.20 events <project> --event <event_name> --days 7 --limit 20`.
@@ -146,8 +146,8 @@ The handoff framing is: "Give your agent analytics judgment and product eyes for
 ```bash
 npx --yes @agent-analytics/cli@0.5.20 scan https://mysite.com --json
 npx --yes @agent-analytics/cli@0.5.20 login --detached
+npx --yes @agent-analytics/cli@0.5.20 create my-site --domain https://mysite.com
 npx --yes @agent-analytics/cli@0.5.20 scan --resume <analysis_id> --resume-token <resume_token> --full --project my-site --json
-npx --yes @agent-analytics/cli@0.5.20 create my-site --domain https://mysite.com --source-scan <analysis_id>
 npx --yes @agent-analytics/cli@0.5.20 events my-site --event <first_useful_event> --days 7 --limit 20
 ```
 
@@ -337,8 +337,8 @@ The easiest install flow is:
 
 1. Run `npx --yes @agent-analytics/cli@0.5.20 scan https://mysite.com --json`
 2. If deeper analysis needs owned surfaces such as docs, pricing, support, or signup pages, scan those URLs too and compare blind spots before editing code.
-3. Login if needed, then resume the analysis with `scan --resume <analysis_id> --resume-token <resume_token> --full --project my-site --json`
-4. Run `npx --yes @agent-analytics/cli@0.5.20 create my-site --domain https://mysite.com --source-scan <analysis_id>`
+3. Login if needed, then create or identify the project with `npx --yes @agent-analytics/cli@0.5.20 create my-site --domain https://mysite.com`
+4. Resume the analysis with `scan --resume <analysis_id> --resume-token <resume_token> --full --project my-site --json`
 5. Copy the returned snippet into the page before `</body>`
 6. Add only the high-priority events from `minimum_viable_instrumentation`
 7. Deploy
