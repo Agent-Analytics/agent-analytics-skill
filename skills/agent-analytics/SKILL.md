@@ -1,7 +1,7 @@
 ---
 name: agent-analytics
 description: "Run analytics end-to-end from your agent without opening a dashboard. English-first workflow, with Chinese docs and content available. Create projects, ship tracking, query results, and run experiments."
-version: 4.0.20
+version: 4.0.21
 author: dannyshmueli
 license: MIT
 repository: https://github.com/Agent-Analytics/agent-analytics-skill
@@ -14,6 +14,7 @@ tags:
   - events
   - experiments
   - live
+  - delegation
 provides:
   - capability: analytics
   - capability: ab-testing
@@ -57,6 +58,95 @@ Hosted free tier includes 100k events/month across 2 projects.
 - If the CLI returns `PRO_REQUIRED` or a free-tier read cap, use the paid-tier handoff below. For other CLI limitations, stay on the CLI path, explain the limitation, and prefer `npx --yes @agent-analytics/cli@0.5.21 feedback` over inventing a non-CLI workaround.
 - Default to browser approval for signup/login. In issue-based runtimes like OpenClaw, prefer detached approval plus a finish-code reply. Do not ask the user to paste secrets into chat.
 - In Paperclip company-task flows, treat detached login as mandatory for the skill path. Do not use plain `login`, do not rely on a localhost callback, and do not auto-open a live interactive browser session on behalf of the task.
+
+## Delegation support
+
+If the AI agent or client supports subagent delegation, Agent Analytics tasks can benefit from it. Hermes supports this through `delegate_task`. Other clients should only use the delegation patterns below if they expose an equivalent child-agent capability with isolated context and explicit tool access.
+
+Use delegation when the work naturally splits into independent Agent Analytics workstreams, for example:
+- growth audits across homepage, scanner, onboarding, docs, compare pages, and ecosystem surfaces
+- one child inspecting live surfaces while another verifies instrumentation in code
+- one child running account or project reads while another checks whether the top growth bets are already measurable
+- multi-project portfolio analysis where each child handles a bounded slice and the parent synthesizes the result
+
+Do not delegate when the job is just one CLI command, a simple one-project read, or an auth handoff that should pause cleanly for the human.
+
+### Delegation rules for child agents
+
+If delegation is available, every child agent doing live Agent Analytics work must follow the same core rules as the parent:
+
+1. Stay on the pinned official CLI path for live Agent Analytics work:
+   `npx --yes @agent-analytics/cli@0.5.21 <command>`
+2. Preserve prerequisite order:
+   - install/setup -> identify the public site URL, then run `scan <url> --json` first
+   - account-wide questions -> run `projects` first
+   - project-specific analysis -> resolve the project, then run `context get <project>` first
+3. Pass concrete context into each child:
+   - project name or ID
+   - public URL
+   - login state
+   - `analysis_id` / `resume_token` if a scan has already started
+   - current activation definition or project context when known
+4. Do not switch transports in children:
+   - no raw API calls, `curl`, repo-local wrappers, MCP, or a locally installed `agent-analytics` binary unless the user explicitly asked for that path
+5. Do not install generic instrumentation before analysis:
+   - use the scan-driven recommendations first
+   - do not add duplicate custom events for automatically captured signals like page views, referrers, UTMs, sessions, browser/device, or country
+6. Verify before finishing:
+   - setup children should verify the first useful recommended event
+   - analysis children should clearly report which top bets are already measurable and which minimal gaps matter now
+
+### Recommended delegation pattern for Agent Analytics growth audits
+
+Best default split when the client supports delegation:
+- child 1: acquisition surfaces (homepage + scanner)
+- child 2: activation surface (agent onboarding / setup flow)
+- child 3: content or ecosystem surfaces (docs, blog, compare pages, directories)
+- optional child 4: measurement verification in the repo or tracked events
+
+Important Hermes note: the default `max_concurrent_children` is 3. If you want all four workstreams, either:
+- run the first three in one delegated batch and run measurement verification as a separate delegated pass, or
+- raise the Hermes delegation concurrency limit explicitly before relying on a four-child batch.
+
+Delegate by surface or job-to-be-done, not by a generic funnel. For Agent Analytics, the surfaces have different local goals:
+- homepage = positioning and route selection
+- scanner = cold-start wedge
+- onboarding = activation
+- blog/docs/compare = intent shaping
+- directories/ecosystem = qualified outbound click-through
+
+The parent agent should synthesize the child outputs in this order:
+1. ranked A/B tests and growth bets
+2. why these bets matter now
+3. surface-specific KPI and CTA recommendations
+4. cross-surface funnel narrative
+5. minimal instrumentation gaps that matter now
+
+Lead with growth bets before instrumentation details.
+
+### Example: delegated Agent Analytics growth audit
+
+Use a split like this when the client supports delegation:
+
+- child 1: homepage + scanner
+  - goal: find the top acquisition bets
+  - focus: route selection, scanner-start rate, scan completion, handoff quality
+- child 2: agent onboarding
+  - goal: find friction to activation
+  - focus: path selection, auth handoff, project creation, first event verification
+- child 3: compare/blog/directory surfaces
+  - goal: find the best intent-shaping and qualified-click bets
+  - focus: local KPI per surface instead of raw signup
+- child 4: measurement verification
+  - goal: verify whether the top bets are already measurable in code or tracked events
+  - focus: exact evidence, minimal attribution or event gaps only
+
+A good parent synthesis for Agent Analytics should answer:
+- what are the top 3-5 growth bets right now?
+- which surface owns each bet?
+- what is the local KPI for that surface?
+- what portfolio activation milestone does it support?
+- what is the smallest measurement gap that blocks readout?
 
 ## What `npx` is doing
 
