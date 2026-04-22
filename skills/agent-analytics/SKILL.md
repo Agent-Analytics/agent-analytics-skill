@@ -1,19 +1,20 @@
 ---
 name: agent-analytics
-description: "Run analytics end-to-end from your agent without opening a dashboard. English-first workflow, with Chinese docs and content available. Create projects, ship tracking, query results, and run experiments."
-version: 4.0.21
+description: "Headless analytics management for AI builders shipping multi-surface products. Let your agent create projects, install tracking, compare surfaces, query results, and run growth analysis from code, chat, or the terminal."
+version: 4.0.22
 author: dannyshmueli
 license: MIT
 repository: https://github.com/Agent-Analytics/agent-analytics-skill
 homepage: https://agentanalytics.sh
-compatibility: Requires npx. Browser approval is the primary login path, and detached approval plus finish-code handoff is the default for issue-based runtimes. In Paperclip company-task workflows, always use detached login for the skill path. Normal setup does not require an API key.
+compatibility: Requires npx. Browser approval is the normal sign-in path, and detached approval plus finish-code handoff is the default for issue-based runtimes. In Paperclip company-task workflows, always use detached login for the skill path. Normal setup does not require an API key or pasting secrets into chat.
 tags:
   - analytics
   - tracking
   - web
   - events
   - experiments
-  - live
+  - growth
+  - builders
   - delegation
 provides:
   - capability: analytics
@@ -29,11 +30,15 @@ metadata:
 
 # Agent Analytics
 
-After install, your agent can create projects, ship tracking, query analytics, run experiments, and iterate without opening a dashboard.
+Agent Analytics is headless analytics management for AI builders shipping products across many surfaces.
+
+After install, your agent can create projects, install tracking, compare surfaces, query analytics, run experiments, and decide what to fix next without opening a dashboard.
+
+It fits the way builders actually work now: one product often spans the main site, docs, blog, onboarding, free tools, and related properties, and one builder or team often runs more than one product.
 
 English-first workflow, with Chinese docs and content available for OpenClaw users and teams in China.
 
-Use it when you want an agent to operate growth analytics end-to-end, automate recurring checks, and manage multiple projects from one conversation loop.
+Use it when you want an agent to operate the day-to-day growth loop across products, portfolios, and surfaces from one conversation, terminal, or code workflow.
 
 The CLI behind this skill is open source and published from:
 
@@ -55,7 +60,7 @@ Hosted free tier includes 100k events/month across 2 projects.
 - Treat that exact `npx` invocation as the primary interface under test in agent environments like OpenClaw and Codex.
 - Do not substitute raw HTTP requests, `curl`, repo-local scripts, `node agent-analytics-cli/...`, MCP tools, or a locally installed `agent-analytics` binary unless the user explicitly asks for one of those paths.
 - If a task needs multiple steps, compose the answer from multiple `npx --yes @agent-analytics/cli@0.5.21 ...` commands instead of switching transports.
-- If the CLI returns `PRO_REQUIRED` or a free-tier read cap, use the paid-tier handoff below. For other CLI limitations, stay on the CLI path, explain the limitation, and prefer `npx --yes @agent-analytics/cli@0.5.21 feedback` over inventing a non-CLI workaround.
+- If the CLI returns `PRO_REQUIRED` or a free-tier read cap, explain which deeper read is blocked, keep the workflow on the official CLI path, and ask the user to upgrade outside the skill before rerunning the blocked command.
 - Default to browser approval for signup/login. In issue-based runtimes like OpenClaw, prefer detached approval plus a finish-code reply. Do not ask the user to paste secrets into chat.
 - In Paperclip company-task flows, treat detached login as mandatory for the skill path. Do not use plain `login`, do not rely on a localhost callback, and do not auto-open a live interactive browser session on behalf of the task.
 
@@ -85,7 +90,7 @@ If delegation is available, every child agent doing live Agent Analytics work mu
    - project name or ID
    - public URL
    - login state
-   - `analysis_id` / `resume_token` if a scan has already started
+   - `analysis_id` and scan resume details if a scan has already started
    - current activation definition or project context when known
 4. Do not switch transports in children:
    - no raw API calls, `curl`, repo-local wrappers, MCP, or a locally installed `agent-analytics` binary unless the user explicitly asked for that path
@@ -252,7 +257,7 @@ npx --yes @agent-analytics/cli@0.5.21 events my-site --event <first_useful_event
 
 For Paperclip, OpenClaw, and other issue-based runtimes, `login --detached` is the preferred first step. It should print the approval URL and exit, so the agent can post the URL to the user without keeping a polling command alive. Wait for the user to sign in with Google or GitHub and reply with the finish code, then run the printed `login --auth-request ... --exchange-code ...` command and continue with project setup.
 
-If the runtime can receive a localhost browser callback, regular `login` is also valid for non-Paperclip interactive environments. The `create` command returns a project token and a ready-to-use tracking snippet. Add that snippet before `</body>`.
+If the runtime can receive a localhost browser callback, regular `login` is also valid for non-Paperclip interactive environments. The `create` command returns the exact tracking snippet for the project. Add that returned snippet before `</body>`.
 
 Use `--detached` when the runtime cannot receive a localhost browser callback, when the workflow happens in issues or task threads, and always for Paperclip company-task execution.
 
@@ -285,29 +290,15 @@ For Paperclip company tasks, use this same detached loop even if the underlying 
 
 ## Paid-tier handoff
 
-Free is enough to prove setup and basic reads. Pro unlocks deeper agent analysis: funnels, retention, sessions, pages, heatmaps, insights, live reads, no monthly agent/API read cap, no monthly event cap, 365-day retention, and experiments.
+Free is enough to prove setup and basic reads. Some deeper reads such as funnels, retention, session paths, longer history, and experiments require Pro.
 
-When a user asks for analysis that likely needs Pro, run the intended CLI command first. Do not pre-sell Pro before proving the block. If the CLI returns `PRO_REQUIRED` or a free-tier read cap, explain the blocked analysis in one sentence and run an explicit upgrade handoff:
+When a user asks for analysis that likely needs Pro, run the intended CLI command first. Do not pre-sell an upgrade before proving the block. If the CLI returns `PRO_REQUIRED` or a free-tier read cap:
 
-```bash
-npx --yes @agent-analytics/cli@0.5.21 upgrade-link --detached \
-  --reason "Need funnel and retention reads for this analysis" \
-  --command "npx --yes @agent-analytics/cli@0.5.21 funnel my-site --steps page_view,signup,purchase"
-```
+1. Explain in one sentence which exact answer is blocked.
+2. Ask the user to upgrade the Agent Analytics account outside the skill if they want that deeper read.
+3. After the user confirms the account is upgraded, run `npx --yes @agent-analytics/cli@0.5.21 whoami`, then rerun the blocked command.
 
-Use `upgrade-link --detached` in issue-based or async runtimes. It prints an `app.agentanalytics.sh` link and exits. Send that link to the human and wait.
-
-Use `upgrade-link --wait` only when the local shell should keep polling until the Lemon Squeezy webhook activates Pro:
-
-```bash
-npx --yes @agent-analytics/cli@0.5.21 upgrade-link --wait \
-  --reason "Need session paths to explain signup drop-off" \
-  --command "npx --yes @agent-analytics/cli@0.5.21 paths my-site --goal signup --since 30d --max-steps 5"
-```
-
-The handoff opens an Agent Analytics dashboard page first, not Lemon Squeezy directly. The human may need to sign in, then the page confirms the same account as the CLI, shows the blocked command and reason, and prompts them to continue to payment. If the browser is signed into the wrong account, the page blocks checkout. If the account is already Pro, tell the human to return to the agent and rerun the blocked command.
-
-After the human pays, run `npx --yes @agent-analytics/cli@0.5.21 whoami`. If it shows Pro, rerun the blocked command and continue the analysis. If the human declines, say which answer remains unavailable and continue only with free-tier commands; do not approximate paid-only results as if they were measured.
+If the user does not upgrade, continue with free-tier commands only and do not approximate paid-only results as if they were measured.
 
 ## Common commands
 
@@ -319,7 +310,7 @@ npx --yes @agent-analytics/cli@0.5.21 insights my-site --period 7d
 npx --yes @agent-analytics/cli@0.5.21 events my-site --days 7 --limit 20
 npx --yes @agent-analytics/cli@0.5.21 breakdown my-site --property path --event page_view --days 7 --limit 10
 npx --yes @agent-analytics/cli@0.5.21 paths my-site --goal signup --since 30d --max-steps 5
-npx --yes @agent-analytics/cli@0.5.21 funnel my-site --steps "page_view,signup,purchase"
+npx --yes @agent-analytics/cli@0.5.21 funnel my-site --steps "page_view,signup,activation"
 npx --yes @agent-analytics/cli@0.5.21 retention my-site --period week --cohorts 8
 npx --yes @agent-analytics/cli@0.5.21 experiments list my-site
 npx --yes @agent-analytics/cli@0.5.21 context get my-site
@@ -427,7 +418,7 @@ Describe the use case, friction, or missing capability in a sanitized way:
 Example:
 
 ```bash
-npx --yes @agent-analytics/cli@0.5.21 feedback --message "The agent had to calculate funnel drop-off manually" --project my-site --command "npx --yes @agent-analytics/cli@0.5.21 funnel my-site --steps page_view,signup,purchase"
+npx --yes @agent-analytics/cli@0.5.21 feedback --message "The agent had to calculate funnel drop-off manually" --project my-site --command "npx --yes @agent-analytics/cli@0.5.21 funnel my-site --steps page_view,signup,activation"
 ```
 
 There is a real agent behind these Telegram messages. Every request is seen and auto-approved, and useful fixes can land quickly, sometimes within hours.
@@ -440,18 +431,12 @@ The easiest install flow is:
 2. If deeper analysis needs owned surfaces such as docs, pricing, support, or signup pages, scan those URLs too and compare blind spots before editing code.
 3. Login if needed, then create or identify the project with `npx --yes @agent-analytics/cli@0.5.21 create my-site --domain https://mysite.com`
 4. Resume the analysis with `scan --resume <analysis_id> --resume-token <resume_token> --full --project my-site --json`
-5. Copy the returned snippet into the page before `</body>`
+5. Copy the returned tracking snippet into the page before `</body>`
 6. Add only the high-priority events from `minimum_viable_instrumentation`
 7. Deploy
 8. Verify with `npx --yes @agent-analytics/cli@0.5.21 events my-site --event <first_useful_event> --days 7 --limit 20`
 
-If you already know the project token, the tracker looks like:
-
-```html
-<script defer src="https://api.agentanalytics.sh/tracker.js"
-  data-project="my-site"
-  data-token="aat_..."></script>
-```
+Use the exact tracking snippet returned by `create` or the dashboard for that project. Do not hardcode a generic tracker snippet when the product has already generated the correct one for the surface.
 
 Use `window.aa?.track('<recommended_event>', {...recommended_properties})` for custom events after the tracker loads. Do not replace the analysis with generic `signup`, `click`, or `conversion` events unless those are the recommended event names.
 
