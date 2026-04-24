@@ -1,7 +1,7 @@
 ---
 name: agent-analytics
 description: "Headless analytics management for AI builders shipping multi-surface products. Let your agent create projects, install tracking, compare surfaces, query results, and run growth analysis from code, chat, or the terminal."
-version: 4.0.22
+version: 4.0.23
 author: dannyshmueli
 license: MIT
 repository: https://github.com/Agent-Analytics/agent-analytics-skill
@@ -60,7 +60,7 @@ Hosted free tier includes 100k events/month across 2 projects.
 - Treat that exact `npx` invocation as the primary interface under test in agent environments like OpenClaw and Codex.
 - Do not substitute raw HTTP requests, `curl`, repo-local scripts, `node agent-analytics-cli/...`, MCP tools, or a locally installed `agent-analytics` binary unless the user explicitly asks for one of those paths.
 - If a task needs multiple steps, compose the answer from multiple `npx --yes @agent-analytics/cli@0.5.21 ...` commands instead of switching transports.
-- If the CLI returns `PRO_REQUIRED` or a free-tier read cap, explain which deeper read is blocked, keep the workflow on the official CLI path, and ask the user to upgrade outside the skill before rerunning the blocked command.
+- If the CLI returns `PRO_REQUIRED` or a free-tier read cap, explain which deeper read is blocked, keep the workflow on the official CLI path, and use the CLI upgrade-link handoff before rerunning the blocked command.
 - Default to browser approval for signup/login. In issue-based runtimes like OpenClaw, prefer detached approval plus a finish-code reply. Do not ask the user to paste secrets into chat.
 - In Paperclip company-task flows, treat detached login as mandatory for the skill path. Do not use plain `login`, do not rely on a localhost callback, and do not auto-open a live interactive browser session on behalf of the task.
 
@@ -295,8 +295,11 @@ Free is enough to prove setup and basic reads. Some deeper reads such as funnels
 When a user asks for analysis that likely needs Pro, run the intended CLI command first. Do not pre-sell an upgrade before proving the block. If the CLI returns `PRO_REQUIRED` or a free-tier read cap:
 
 1. Explain in one sentence which exact answer is blocked.
-2. Ask the user to upgrade the Agent Analytics account outside the skill if they want that deeper read.
-3. After the user confirms the account is upgraded, run `npx --yes @agent-analytics/cli@0.5.21 whoami`, then rerun the blocked command.
+2. Run `npx --yes @agent-analytics/cli@0.5.21 upgrade-link --detached --reason "<why Pro is needed>" --command "<blocked command>"`.
+3. Send the printed app-domain payment handoff to the human. It opens the dashboard page first; that page may ask them to sign in, confirms the same account as the CLI, shows the blocked command and reason, and then opens Lemon Squeezy.
+4. After the user confirms the account is upgraded, run `npx --yes @agent-analytics/cli@0.5.21 whoami`, then rerun the blocked command.
+
+Use `upgrade-link --wait` only when the local shell should intentionally keep polling until the payment webhook activates Pro.
 
 If the user does not upgrade, continue with free-tier commands only and do not approximate paid-only results as if they were measured.
 
@@ -314,6 +317,7 @@ npx --yes @agent-analytics/cli@0.5.21 funnel my-site --steps "page_view,signup,a
 npx --yes @agent-analytics/cli@0.5.21 retention my-site --period week --cohorts 8
 npx --yes @agent-analytics/cli@0.5.21 experiments list my-site
 npx --yes @agent-analytics/cli@0.5.21 context get my-site
+npx --yes @agent-analytics/cli@0.5.21 portfolio-context get
 npx --yes @agent-analytics/cli@0.5.21 update my-site --origins 'https://mysite.com,http://lvh.me:3101'
 ```
 
@@ -346,6 +350,13 @@ For multi-project or multi-domain work, keep context separate per project. Do no
 - A directory or marketing domain might define activation as a qualified visitor clicking through to the product or becoming a lead.
 
 When those projects belong to the same growth system, add a separate account-level portfolio context with `portfolio-context get` and `portfolio-context set`. Use that layer for shared goals, surface roles, and cross-project milestones such as `qualified_click_to_product` or `first_recommended_event_verified`. Keep project context for per-surface truth; keep portfolio context for shared interpretation across surfaces.
+
+For cross-project identity stitching, the agent must configure both browser-side link carrying and server-side portfolio scope:
+
+- Add `data-link-domains` to each participating tracker snippet so the anonymous `_aa` link parameter can move between related domains.
+- Add the separate Agent Analytics projects to portfolio context `surface_roles` so hosted reads resolve those projects in one identity scope.
+
+`data-link-domains` alone decorates links but does not make separate projects share identity. Portfolio context alone defines the shared scope but does not carry a browser anonymous ID across domains. For a discovery-to-product flow such as `directory.example.com -> example.com -> app.example.com`, set the same domain list on each participating tracker and store the discovery, conversion, and app projects in the same portfolio context.
 
 When answering, briefly mention when stored project context shaped the interpretation. When you update context, state the compact change you saved.
 

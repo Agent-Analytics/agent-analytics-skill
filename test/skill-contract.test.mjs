@@ -22,7 +22,7 @@ const readme = readFileSync(join(root, 'README.md'), 'utf8');
 
 describe('agent-analytics skill contract', () => {
   it('pins the official CLI to 0.5.21 everywhere', () => {
-    assert.match(skill, /version: 4\.0\.20/);
+    assert.match(skill, /version: 4\.0\.23/);
     assert.ok(skill.includes('npx --yes @agent-analytics/cli@0.5.21'));
     assert.ok(readme.includes('npx --yes @agent-analytics/cli@0.5.21'));
     assert.match(autoresearchSkill, /version: 1\.0\.6/);
@@ -128,6 +128,13 @@ describe('agent-analytics skill contract', () => {
     assert.match(skill, /Skip noisy findings/i);
     assert.match(skill, /Do not invent unsupported fields/i);
     assert.match(skill, /multi-project or multi-domain/i);
+    assert.match(skill, /portfolio-context get/i);
+    assert.match(skill, /surface_roles/i);
+    assert.match(skill, /data-link-domains/i);
+    assert.match(skill, /cross-project identity stitching/i);
+    assert.match(skill, /decorates links but does not make separate projects share identity/i);
+    assert.match(readme, /cross-project identity stitching/i);
+    assert.match(readme, /data-link-domains.*surface_roles/i);
     assert.match(skill, /trial signup plus first item created/i);
     assert.match(skill, /teammate invited/i);
     assert.match(skill, /next analysis starts smarter/i);

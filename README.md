@@ -34,6 +34,7 @@ The regular Agent Analytics skill teaches an agent how to use the official Agent
 - analyze funnels and retention
 - store compact project goals, activation events, and event-name glossary context
 - keep that context as a per-project, self-improving memory after scans, instrumentation, analysis, and human corrections
+- configure portfolio context for related projects and pair it with tracker `data-link-domains` for cross-project identity stitching
 - scan additional public websites the user owns so the agent can find useful data that is not being collected yet
 - read existing context before analysis, merge before writes, and save only durable product truth instead of noisy metric findings
 - run experiments
@@ -95,6 +96,8 @@ npx --yes @agent-analytics/cli@0.5.21 scan <url> --project <project> --json
 The skill uses the analysis output as analytics judgment: install only high-priority `minimum_viable_instrumentation`, explain what each event enables, and avoid generic tracking. When multiple owned surfaces are scanned, compare `current_blindspots` and `minimum_viable_instrumentation` before choosing what to instrument first.
 
 Recommendations include practical `implementation_hint` guidance. Agents should map those hints to tracker.js capabilities instead of inventing generic instrumentation: use `data-aa-event` for named click intent, `data-aa-impression` for meaningful section exposure, `window.aa.track(...)` for computed client state, and server-side tracking for durable outcomes such as completed signup. Do not add custom duplicates for automatic tracker signals like `page_view`, path, referrer, UTMs, device/browser fields, country, session IDs, session count, days since first visit, or first-touch attribution.
+
+For related projects that should share identity, the skill teaches agents to configure both sides of the flow: tracker `data-link-domains` carries the anonymous `_aa` value across domains, while portfolio context `surface_roles` puts separate Agent Analytics projects into the same identity scope.
 
 For OpenClaw and similar managed runtimes, store CLI auth in a persistent workspace path instead of the default home config path:
 
