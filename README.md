@@ -33,6 +33,7 @@ The regular Agent Analytics skill teaches an agent how to use the official Agent
 - connect entry pages, exit pages, and goals with bounded session paths
 - analyze funnels and retention
 - store compact project goals, activation events, and event-name glossary context
+- store date annotations for major landing page, pricing, onboarding, feature, release, or experiment changes
 - keep that context as a per-project, self-improving memory after scans, instrumentation, analysis, and human corrections
 - configure portfolio context for related projects and pair it with tracker `data-link-domains` for cross-project identity stitching
 - scan additional public websites the user owns so the agent can find useful data that is not being collected yet

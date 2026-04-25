@@ -126,6 +126,13 @@ describe('agent-analytics skill contract', () => {
     assert.match(skill, /Always read the existing context first/i);
     assert.match(skill, /Save durable product truth/i);
     assert.match(skill, /Skip noisy findings/i);
+    assert.match(skill, /annotations/i);
+    assert.match(skill, /major product changes/i);
+    assert.match(skill, /landing page, pricing, onboarding, feature, release, or experiment/i);
+    assert.match(skill, /do not store git commit logs/i);
+    assert.match(skill, /512KB/i);
+    assert.match(skill, /max 100/i);
+    assert.match(skill, /requested analytics date range plus one day/i);
     assert.match(skill, /Do not invent unsupported fields/i);
     assert.match(skill, /multi-project or multi-domain/i);
     assert.match(skill, /portfolio-context get/i);
@@ -135,6 +142,7 @@ describe('agent-analytics skill contract', () => {
     assert.match(skill, /decorates links but does not make separate projects share identity/i);
     assert.match(readme, /cross-project identity stitching/i);
     assert.match(readme, /data-link-domains.*surface_roles/i);
+    assert.match(readme, /date annotations/i);
     assert.match(skill, /trial signup plus first item created/i);
     assert.match(skill, /teammate invited/i);
     assert.match(skill, /next analysis starts smarter/i);

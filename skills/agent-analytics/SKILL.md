@@ -325,7 +325,7 @@ If a task needs something outside these common flows, use `npx --yes @agent-anal
 
 ## Project context
 
-Use `context get` and `context set` when the product has custom goals, activation events, or event meanings that should travel with analytics results. Keep the context short because project analytics endpoints include it as `project_context` for later agent reads. `context set` accepts an encoded JSON body up to 8KB.
+Use `context get` and `context set` when the product has custom goals, activation events, event meanings, or date annotations that should travel with analytics results. Keep the context short because project analytics endpoints include it as `project_context` for later agent reads. `context set` accepts an encoded JSON body up to 512KB.
 
 At the start of any project-specific analysis, run `context get <project>` after resolving the project. Use the returned `project_context` to interpret metrics, choose goal events, and explain results in the product's language.
 
@@ -333,15 +333,26 @@ Treat project context as compact self-improving memory close to the analytics da
 
 Before setting or refreshing context, inspect current event names with `properties <project>` or `properties-received <project>`. Glossary entries must be tied to `event_name` so future agents can connect human product language to actual tracked events.
 
-`context set` replaces the stored context. Always read the existing context first, merge your change, and preserve still-valid goals, activation events, and glossary entries.
+`context set` replaces the stored context. Always read the existing context first, merge your change, and preserve still-valid goals, activation events, glossary entries, and annotations.
 
 After website analysis, first instrumentation, funnel work, retention review, or a human correction, do a short context review:
 
 - Save durable product truth: activation definition, business goals, event meanings, which events matter, and stable interpretations such as "invite_team_member is the meaningful team activation event."
-- Skip noisy findings: weekly metric values, temporary anomalies, raw reports, long notes, user lists, PII, secrets, and guesses that are not useful in future analyses.
+- Save date annotations for major product changes: meaningful landing page, pricing, onboarding, feature, release, or experiment changes that could explain future graph movement.
+- Skip noisy findings: weekly metric values, temporary anomalies, raw reports, long notes, user lists, PII, secrets, git commit logs, and guesses that are not useful in future analyses.
 - If a learning is clear from the user's instruction or a Product Growth Scanner result, update context. If it is inferred from analytics and could be wrong, ask one short confirmation question first.
 - If the context is near the limits, consolidate or replace weaker entries instead of appending more text.
-- Do not invent unsupported fields such as `findings`, `learnings`, or `open_questions` in `context set`; store only what fits `goals`, `activation_events`, and event-name `glossary`.
+- Do not invent unsupported fields such as `findings`, `learnings`, or `open_questions` in `context set`; store only what fits `goals`, `activation_events`, event-name `glossary`, and `annotations`.
+
+Annotations use `occurred_at`, `title`, and optional `note`. Keep them rare and useful: max 100 annotations per project, title under 120 characters, and note under 500 characters. When an analytics response includes project context, annotations are filtered to the requested analytics date range plus one day before and after; `context get` returns all stored annotations.
+
+Do not store git commit logs as annotations. Store only human-meaningful product changes that can help explain later analytics movement.
+
+After you ship or notice a major product change, ask the user whether to store an annotation if they did not already say to do it. Use a compact entry such as:
+
+```bash
+npx --yes @agent-analytics/cli@0.5.23 context set my-site --json '{"goals":["Increase activated accounts"],"activation_events":["signup_completed"],"glossary":[{"event_name":"signup_completed","term":"Signup","definition":"A verified account completed signup."}],"annotations":[{"occurred_at":"2026-04-25T13:00:00.000Z","title":"Changed pricing page offer","note":"Moved annual plan discount above the fold."}]}'
+```
 
 For multi-project or multi-domain work, keep context separate per project. Do not reuse one activation definition across a product app, directory site, docs site, landing page, or lead-generation domain unless the human explicitly says they share the same meaning. Examples:
 
