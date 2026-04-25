@@ -1,7 +1,7 @@
 ---
 name: agent-analytics
 description: "Headless analytics management for AI builders shipping multi-surface products. Let your agent create projects, install tracking, compare surfaces, query results, and run growth analysis from code, chat, or the terminal."
-version: 4.0.23
+version: 4.0.24
 author: dannyshmueli
 license: MIT
 repository: https://github.com/Agent-Analytics/agent-analytics-skill
@@ -56,10 +56,10 @@ Hosted free tier includes 100k events/month across 2 projects.
 
 ## Mandatory execution policy
 
-- For any live Agent Analytics task, always use the official CLI through `npx --yes @agent-analytics/cli@0.5.21 <command>`.
+- For any live Agent Analytics task, always use the official CLI through `npx --yes @agent-analytics/cli@0.5.23 <command>`.
 - Treat that exact `npx` invocation as the primary interface under test in agent environments like OpenClaw and Codex.
 - Do not substitute raw HTTP requests, `curl`, repo-local scripts, `node agent-analytics-cli/...`, MCP tools, or a locally installed `agent-analytics` binary unless the user explicitly asks for one of those paths.
-- If a task needs multiple steps, compose the answer from multiple `npx --yes @agent-analytics/cli@0.5.21 ...` commands instead of switching transports.
+- If a task needs multiple steps, compose the answer from multiple `npx --yes @agent-analytics/cli@0.5.23 ...` commands instead of switching transports.
 - If the CLI returns `PRO_REQUIRED` or a free-tier read cap, explain which deeper read is blocked, keep the workflow on the official CLI path, and use the CLI upgrade-link handoff before rerunning the blocked command.
 - Default to browser approval for signup/login. In issue-based runtimes like OpenClaw, prefer detached approval plus a finish-code reply. Do not ask the user to paste secrets into chat.
 - In Paperclip company-task flows, treat detached login as mandatory for the skill path. Do not use plain `login`, do not rely on a localhost callback, and do not auto-open a live interactive browser session on behalf of the task.
@@ -81,7 +81,7 @@ Do not delegate when the job is just one CLI command, a simple one-project read,
 If delegation is available, every child agent doing live Agent Analytics work must follow the same core rules as the parent:
 
 1. Stay on the pinned official CLI path for live Agent Analytics work:
-   `npx --yes @agent-analytics/cli@0.5.21 <command>`
+   `npx --yes @agent-analytics/cli@0.5.23 <command>`
 2. Preserve prerequisite order:
    - install/setup -> identify the public site URL, then run `scan <url> --json` first
    - account-wide questions -> run `projects` first
@@ -155,23 +155,23 @@ A good parent synthesis for Agent Analytics should answer:
 
 ## What `npx` is doing
 
-- OpenClaw can launch the official CLI with `npx --yes @agent-analytics/cli@0.5.21`.
+- OpenClaw can launch the official CLI with `npx --yes @agent-analytics/cli@0.5.23`.
 - That command runs the published Agent Analytics CLI package from npm.
 - The CLI calls the same HTTP API documented at <https://docs.agentanalytics.sh/api/>.
-- Agents should still use the pinned `npx --yes @agent-analytics/cli@0.5.21 ...` form instead of bypassing the CLI.
+- Agents should still use the pinned `npx --yes @agent-analytics/cli@0.5.23 ...` form instead of bypassing the CLI.
 
 ## Command format
 
 In OpenClaw, Codex, and similar agent environments, use this exact form:
 
 ```bash
-npx --yes @agent-analytics/cli@0.5.21 <command>
+npx --yes @agent-analytics/cli@0.5.23 <command>
 ```
 
 For the full command list and flags:
 
 ```bash
-npx --yes @agent-analytics/cli@0.5.21 --help
+npx --yes @agent-analytics/cli@0.5.23 --help
 ```
 
 Do not replace skill examples with `agent-analytics <command>` in agent runs unless the user explicitly asks to use a locally installed binary.
@@ -182,21 +182,21 @@ In OpenClaw and similar managed runtimes, do not rely on the default user-home c
 
 ```bash
 export AGENT_ANALYTICS_CONFIG_DIR="$PWD/.openclaw/agent-analytics"
-npx --yes @agent-analytics/cli@0.5.21 login --detached
-npx --yes @agent-analytics/cli@0.5.21 auth status
+npx --yes @agent-analytics/cli@0.5.23 login --detached
+npx --yes @agent-analytics/cli@0.5.23 auth status
 ```
 
 If shell environment persistence is uncertain, prefix every command instead of relying on `export`:
 
 ```bash
-AGENT_ANALYTICS_CONFIG_DIR="$PWD/.openclaw/agent-analytics" npx --yes @agent-analytics/cli@0.5.21 projects
+AGENT_ANALYTICS_CONFIG_DIR="$PWD/.openclaw/agent-analytics" npx --yes @agent-analytics/cli@0.5.23 projects
 ```
 
 For one-off debugging, `--config-dir "$PWD/.openclaw/agent-analytics"` is also valid before or after the command. Before login, make sure `.openclaw/` is gitignored. Never commit `.openclaw/agent-analytics/config.json`.
 
 ## Safe operating rules
 
-- Use only `npx --yes @agent-analytics/cli@0.5.21 ...` for live queries unless the user explicitly requests API, MCP, or a local binary.
+- Use only `npx --yes @agent-analytics/cli@0.5.23 ...` for live queries unless the user explicitly requests API, MCP, or a local binary.
 - Anonymous website-analysis preview is available on the web scanner at `https://agentanalytics.sh/analysis/`. In CLI and agent runtimes, sign in first and use `scan` only for sites the user owns or manages as part of Agent Analytics setup.
 - Prefer fixed commands over ad-hoc query construction.
 - Start with `projects`, `all-sites`, `create`, `stats`, `insights`, `events`, `properties`, `context`, `breakdown`, `pages`, `paths`, `heatmap`, `sessions-dist`, `retention`, `funnel`, `experiments`, and `feedback`.
@@ -210,7 +210,7 @@ For one-off debugging, `--config-dir "$PWD/.openclaw/agent-analytics"` is also v
   - "visits" means `session_count`
   - "visitors" means `unique_users`
   - "page views" means `event_count` filtered to `event=page_view`
-- If the task requires manual aggregation across projects, do that aggregation after collecting the data via repeated `npx --yes @agent-analytics/cli@0.5.21 ...` calls.
+- If the task requires manual aggregation across projects, do that aggregation after collecting the data via repeated `npx --yes @agent-analytics/cli@0.5.23 ...` calls.
 - Validate project names before `create`: `^[a-zA-Z0-9._-]{1,64}$`
 
 ## Analysis-first install policy
@@ -219,7 +219,7 @@ When the user asks to install Agent Analytics, add analytics events, or set up t
 
 Anonymous website-analysis preview is available on the public web scanner at `https://agentanalytics.sh/analysis/`. In CLI and agent runtimes, sign in first, then run `scan` only for sites the user owns or manages as part of setup.
 
-In CLI setup, first identify the primary public website root URL for the project, start `login --detached` or the normal browser login flow if needed, then create or identify the Agent Analytics project whose `allowed_origins` domain matches the scanned hostname. After that, run `npx --yes @agent-analytics/cli@0.5.21 scan <url> --project <project> --json`. Treat the output as the source of analytics judgment: it tells you what the user's agent should track first, what each event unlocks, and what not to track yet.
+In CLI setup, first identify the primary public website root URL for the project, start `login --detached` or the normal browser login flow if needed, then create or identify the Agent Analytics project whose `allowed_origins` domain matches the scanned hostname. After that, run `npx --yes @agent-analytics/cli@0.5.23 scan <url> --project <project> --json`. Treat the output as the source of analytics judgment: it tells you what the user's agent should track first, what each event unlocks, and what not to track yet.
 
 If the user asks for deep analysis, owns multiple sites, or the repo points to related public surfaces, scan the additional public websites the user owns or operates too. Typical owned surfaces include the marketing site, docs, pricing page, app signup surface, support site, changelog, launch page, or demo page. Only scan sites the user owns, operates, or explicitly asks you to analyze. Compare `current_blindspots` and `minimum_viable_instrumentation` across those scans before deciding what to install first. This is part of the workflow: the scanner gives the agent product eyes on useful data the user may not be collecting yet, not just analytics data after tracking is installed.
 
@@ -227,14 +227,14 @@ Use the preview to continue setup:
 
 1. If the user is not logged in, start `login --detached` or the normal browser login flow.
 2. Create or identify the Agent Analytics project before running CLI website analysis; the project must have an `allowed_origins` domain that matches the scanned hostname.
-3. Run `npx --yes @agent-analytics/cli@0.5.21 scan <url> --project <project> --json` and read `minimum_viable_instrumentation`, `current_blindspots`, `not_needed_yet`, `goal_driven_funnels`, and `after_install_agent_behavior`.
+3. Run `npx --yes @agent-analytics/cli@0.5.23 scan <url> --project <project> --json` and read `minimum_viable_instrumentation`, `current_blindspots`, `not_needed_yet`, `goal_driven_funnels`, and `after_install_agent_behavior`.
 4. For deeper multi-site work, compare scans for additional owned public surfaces before editing code.
 5. Install the tracker plus only high-priority `minimum_viable_instrumentation` items first.
 6. Explain what each event enables before or while installing it.
-7. Verify the first useful recommended event with `npx --yes @agent-analytics/cli@0.5.21 events <project> --event <event_name> --days 7 --limit 20`.
+7. Verify the first useful recommended event with `npx --yes @agent-analytics/cli@0.5.23 events <project> --event <event_name> --days 7 --limit 20`.
 8. Summarize what the installed events now let the user's agent answer.
 
-Follow each recommendation's `implementation_hint`. Page views, paths, referrers, UTMs, device/browser fields, country, session IDs, session count, days since first visit, and first-touch attribution are automatic, so do not add duplicate custom events for those signals. Prefer `data-aa-event` attributes for named click intent, `data-aa-impression` for meaningful section exposure, `window.aa.track(...)` for computed client state, server-side tracking for durable outcomes such as `signup_completed`, and `aa.identify(...)` plus `aa.set(...)` immediately after auth. Use broad script opt-ins like `data-track-clicks`, scroll depth, errors, forms, downloads, vitals, or performance only when the analysis says they unlock a concrete decision.
+Follow each recommendation's `implementation_hint`. Page views, paths, referrers, UTMs, device/browser fields, country, session IDs, session count, days since first visit, and first-touch attribution are automatic, so do not add duplicate custom events for those signals. Prefer `data-aa-event` attributes for named click intent, `data-aa-impression` for meaningful section exposure, `window.aa.track(...)` for computed client state, server-side tracking for durable outcomes such as `signup_completed`, and `aa.identify(userId, { email, plan, role, team })` plus `aa.set(...)` immediately after auth. Use broad script opt-ins like `data-track-clicks`, scroll depth, errors, forms, downloads, vitals, or performance only when the analysis says they unlock a concrete decision.
 
 The handoff framing is: "Give your agent analytics judgment and product eyes for data you are not collecting yet." If you need to pass work to another agent, say to scan relevant owned public surfaces, install only high-priority minimum viable instrumentation first, explain what each event enables, avoid generic tracking, and verify the first useful recommended event.
 
@@ -249,10 +249,10 @@ https://agentanalytics.sh/analysis/
 For CLI and agent runtimes, use the authenticated setup flow:
 
 ```bash
-npx --yes @agent-analytics/cli@0.5.21 login --detached
-npx --yes @agent-analytics/cli@0.5.21 create my-site --domain https://mysite.com
-npx --yes @agent-analytics/cli@0.5.21 scan https://mysite.com --project my-site --json
-npx --yes @agent-analytics/cli@0.5.21 events my-site --event <first_useful_event> --days 7 --limit 20
+npx --yes @agent-analytics/cli@0.5.23 login --detached
+npx --yes @agent-analytics/cli@0.5.23 create my-site --domain https://mysite.com
+npx --yes @agent-analytics/cli@0.5.23 scan https://mysite.com --project my-site --json
+npx --yes @agent-analytics/cli@0.5.23 events my-site --event <first_useful_event> --days 7 --limit 20
 ```
 
 For Paperclip, OpenClaw, and other issue-based runtimes, `login --detached` is the preferred first step. It should print the approval URL and exit, so the agent can post the URL to the user without keeping a polling command alive. Wait for the user to sign in with Google or GitHub and reply with the finish code, then run the printed `login --auth-request ... --exchange-code ...` command and continue with project setup.
@@ -279,7 +279,7 @@ If this product has other owned public websites or pages that shape the growth l
 
 For OpenClaw-style issue workflows, the expected login loop is:
 
-1. run `npx --yes @agent-analytics/cli@0.5.21 login --detached`
+1. run `npx --yes @agent-analytics/cli@0.5.23 login --detached`
 2. send the approval URL to the user
 3. wait for the user to reply with the finish code
 4. complete the exchange with the printed `login --auth-request ... --exchange-code ...` command and keep going with setup
@@ -295,9 +295,9 @@ Free is enough to prove setup and basic reads. Some deeper reads such as funnels
 When a user asks for analysis that likely needs Pro, run the intended CLI command first. Do not pre-sell an upgrade before proving the block. If the CLI returns `PRO_REQUIRED` or a free-tier read cap:
 
 1. Explain in one sentence which exact answer is blocked.
-2. Run `npx --yes @agent-analytics/cli@0.5.21 upgrade-link --detached --reason "<why Pro is needed>" --command "<blocked command>"`.
+2. Run `npx --yes @agent-analytics/cli@0.5.23 upgrade-link --detached --reason "<why Pro is needed>" --command "<blocked command>"`.
 3. Send the printed app-domain payment handoff to the human. It opens the dashboard page first; that page may ask them to sign in, confirms the same account as the CLI, shows the blocked command and reason, and then opens Lemon Squeezy.
-4. After the user confirms the account is upgraded, run `npx --yes @agent-analytics/cli@0.5.21 whoami`, then rerun the blocked command.
+4. After the user confirms the account is upgraded, run `npx --yes @agent-analytics/cli@0.5.23 whoami`, then rerun the blocked command.
 
 Use `upgrade-link --wait` only when the local shell should intentionally keep polling until the payment webhook activates Pro.
 
@@ -306,22 +306,22 @@ If the user does not upgrade, continue with free-tier commands only and do not a
 ## Common commands
 
 ```bash
-npx --yes @agent-analytics/cli@0.5.21 projects
-npx --yes @agent-analytics/cli@0.5.21 all-sites --period 7d
-npx --yes @agent-analytics/cli@0.5.21 stats my-site --days 7
-npx --yes @agent-analytics/cli@0.5.21 insights my-site --period 7d
-npx --yes @agent-analytics/cli@0.5.21 events my-site --days 7 --limit 20
-npx --yes @agent-analytics/cli@0.5.21 breakdown my-site --property path --event page_view --days 7 --limit 10
-npx --yes @agent-analytics/cli@0.5.21 paths my-site --goal signup --since 30d --max-steps 5
-npx --yes @agent-analytics/cli@0.5.21 funnel my-site --steps "page_view,signup,activation"
-npx --yes @agent-analytics/cli@0.5.21 retention my-site --period week --cohorts 8
-npx --yes @agent-analytics/cli@0.5.21 experiments list my-site
-npx --yes @agent-analytics/cli@0.5.21 context get my-site
-npx --yes @agent-analytics/cli@0.5.21 portfolio-context get
-npx --yes @agent-analytics/cli@0.5.21 update my-site --origins 'https://mysite.com,http://lvh.me:3101'
+npx --yes @agent-analytics/cli@0.5.23 projects
+npx --yes @agent-analytics/cli@0.5.23 all-sites --period 7d
+npx --yes @agent-analytics/cli@0.5.23 stats my-site --days 7
+npx --yes @agent-analytics/cli@0.5.23 insights my-site --period 7d
+npx --yes @agent-analytics/cli@0.5.23 events my-site --days 7 --limit 20
+npx --yes @agent-analytics/cli@0.5.23 breakdown my-site --property path --event page_view --days 7 --limit 10
+npx --yes @agent-analytics/cli@0.5.23 paths my-site --goal signup --since 30d --max-steps 5
+npx --yes @agent-analytics/cli@0.5.23 funnel my-site --steps "page_view,signup,activation"
+npx --yes @agent-analytics/cli@0.5.23 retention my-site --period week --cohorts 8
+npx --yes @agent-analytics/cli@0.5.23 experiments list my-site
+npx --yes @agent-analytics/cli@0.5.23 context get my-site
+npx --yes @agent-analytics/cli@0.5.23 portfolio-context get
+npx --yes @agent-analytics/cli@0.5.23 update my-site --origins 'https://mysite.com,http://lvh.me:3101'
 ```
 
-If a task needs something outside these common flows, use `npx --yes @agent-analytics/cli@0.5.21 --help` first.
+If a task needs something outside these common flows, use `npx --yes @agent-analytics/cli@0.5.23 --help` first.
 
 ## Project context
 
@@ -358,13 +358,28 @@ For cross-project identity stitching, the agent must configure both browser-side
 
 `data-link-domains` alone decorates links but does not make separate projects share identity. Portfolio context alone defines the shared scope but does not carry a browser anonymous ID across domains. For a discovery-to-product flow such as `directory.example.com -> example.com -> app.example.com`, set the same domain list on each participating tracker and store the discovery, conversion, and app projects in the same portfolio context.
 
+## User identity and journeys
+
+After a visitor signs in, call `aa.identify(userId, { email, plan, role, team })` with the app's stable user id. The browser tracker keeps `user_id` as the canonical identity, strips raw `email` from event properties by default, hashes normalized email client-side when available, and sends profile data to the hosted identity endpoint.
+
+Use identity lookup when the user asks for one person's journey, support investigation, or account-level debugging:
+
+```bash
+npx --yes @agent-analytics/cli@0.5.23 journey my-site --user-id user_123 --since 30d
+npx --yes @agent-analytics/cli@0.5.23 journey my-site --email alice@example.com --since 30d
+npx --yes @agent-analytics/cli@0.5.23 events my-site --email alice@example.com --days 30
+npx --yes @agent-analytics/cli@0.5.23 query my-site --email alice@example.com --group-by event --metrics event_count
+```
+
+For `--email`, the CLI normalizes and SHA-256 hashes the email locally, then sends only `email_hash` to the API. This is intentionally not raw email storage. It is also not a keyed HMAC, so a hash may be guessable for a known email address; do not present it as cryptographic anonymization.
+
 When answering, briefly mention when stored project context shaped the interpretation. When you update context, state the compact change you saved.
 
 Example:
 
 ```bash
-npx --yes @agent-analytics/cli@0.5.21 properties my-site
-npx --yes @agent-analytics/cli@0.5.21 context set my-site --json '{"goals":["Increase activated accounts"],"activation_events":["signup_completed","project_created","first_event_received"],"glossary":[{"event_name":"first_event_received","term":"AA Activation","definition":"Signup, project created, and first event received."}]}'
+npx --yes @agent-analytics/cli@0.5.23 properties my-site
+npx --yes @agent-analytics/cli@0.5.23 context set my-site --json '{"goals":["Increase activated accounts"],"activation_events":["signup_completed","project_created","first_event_received"],"glossary":[{"event_name":"first_event_received","term":"AA Activation","definition":"Signup, project created, and first event received."}]}'
 ```
 
 ## Session paths
@@ -373,7 +388,7 @@ Use `paths` when the user asks how entry pages, exit pages, and conversion behav
 
 Prefer this workflow:
 
-1. Run `npx --yes @agent-analytics/cli@0.5.21 paths <project> --goal <event> --since 30d --max-steps 5`
+1. Run `npx --yes @agent-analytics/cli@0.5.23 paths <project> --goal <event> --since 30d --max-steps 5`
 2. Summarize the top entry pages, exit pages, drop-offs, truncations, and conversion rate.
 3. Recommend the next bounded analysis step: a funnel, retention check, or experiment.
 
@@ -389,11 +404,11 @@ How many visits did all my projects get in the last 48 hours?
 
 Workflow:
 
-1. Run `npx --yes @agent-analytics/cli@0.5.21 projects`
+1. Run `npx --yes @agent-analytics/cli@0.5.23 projects`
 2. For each project, run:
 
 ```bash
-npx --yes @agent-analytics/cli@0.5.21 query my-site --metrics session_count --days 2
+npx --yes @agent-analytics/cli@0.5.23 query my-site --metrics session_count --days 2
 ```
 
 3. Sum the returned `session_count` values across projects
@@ -411,14 +426,14 @@ FROM_MS=$(node -e 'console.log(Date.now() - 24 * 60 * 60 * 1000)')
 TO_MS=$(node -e 'console.log(Date.now())')
 FROM_DATE=$(node -e 'console.log(new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10))')
 TO_DATE=$(node -e 'console.log(new Date().toISOString().slice(0, 10))')
-npx --yes @agent-analytics/cli@0.5.21 query my-site --metrics event_count,unique_users --group-by event --from "$FROM_DATE" --to "$TO_DATE" --filter "[{\"field\":\"timestamp\",\"op\":\"gte\",\"value\":$FROM_MS},{\"field\":\"timestamp\",\"op\":\"lte\",\"value\":$TO_MS}]" --count-mode raw --order-by event_count --order desc
+npx --yes @agent-analytics/cli@0.5.23 query my-site --metrics event_count,unique_users --group-by event --from "$FROM_DATE" --to "$TO_DATE" --filter "[{\"field\":\"timestamp\",\"op\":\"gte\",\"value\":$FROM_MS},{\"field\":\"timestamp\",\"op\":\"lte\",\"value\":$TO_MS}]" --count-mode raw --order-by event_count --order desc
 ```
 
 Do not answer an exact "last 24 hours" request with `stats --days 1` unless the user explicitly accepts a whole-day approximation.
 
 ## Feedback
 
-Use `npx --yes @agent-analytics/cli@0.5.21 feedback` when Agent Analytics was confusing, a task took too long, the workflow could be improved, or the agent had to do manual calculations or analysis that Agent Analytics should have handled.
+Use `npx --yes @agent-analytics/cli@0.5.23 feedback` when Agent Analytics was confusing, a task took too long, the workflow could be improved, or the agent had to do manual calculations or analysis that Agent Analytics should have handled.
 
 Describe the use case, friction, or missing capability in a sanitized way:
 
@@ -429,7 +444,7 @@ Describe the use case, friction, or missing capability in a sanitized way:
 Example:
 
 ```bash
-npx --yes @agent-analytics/cli@0.5.21 feedback --message "The agent had to calculate funnel drop-off manually" --project my-site --command "npx --yes @agent-analytics/cli@0.5.21 funnel my-site --steps page_view,signup,activation"
+npx --yes @agent-analytics/cli@0.5.23 feedback --message "The agent had to calculate funnel drop-off manually" --project my-site --command "npx --yes @agent-analytics/cli@0.5.23 funnel my-site --steps page_view,signup,activation"
 ```
 
 There is a real agent behind these Telegram messages. Every request is seen and auto-approved, and useful fixes can land quickly, sometimes within hours.
@@ -438,27 +453,27 @@ There is a real agent behind these Telegram messages. Every request is seen and 
 
 The easiest install flow is:
 
-1. Run `npx --yes @agent-analytics/cli@0.5.21 scan https://mysite.com --json`
+1. Run `npx --yes @agent-analytics/cli@0.5.23 scan https://mysite.com --json`
 2. If deeper analysis needs owned surfaces such as docs, pricing, support, or signup pages, scan those URLs too and compare blind spots before editing code.
-3. Login if needed, then create or identify the project with `npx --yes @agent-analytics/cli@0.5.21 create my-site --domain https://mysite.com`
+3. Login if needed, then create or identify the project with `npx --yes @agent-analytics/cli@0.5.23 create my-site --domain https://mysite.com`
 4. Resume the analysis with `scan --resume <analysis_id> --resume-token <resume_token> --full --project my-site --json`
 5. Copy the returned tracking snippet into the page before `</body>`
 6. Add only the high-priority events from `minimum_viable_instrumentation`
 7. Deploy
-8. Verify with `npx --yes @agent-analytics/cli@0.5.21 events my-site --event <first_useful_event> --days 7 --limit 20`
+8. Verify with `npx --yes @agent-analytics/cli@0.5.23 events my-site --event <first_useful_event> --days 7 --limit 20`
 
 Use the exact tracking snippet returned by `create` or the dashboard for that project. Do not hardcode a generic tracker snippet when the product has already generated the correct one for the surface.
 
-Use `window.aa?.track('<recommended_event>', {...recommended_properties})` for custom events after the tracker loads. Do not replace the analysis with generic `signup`, `click`, or `conversion` events unless those are the recommended event names.
+Use `window.aa?.track('<recommended_event>', {...recommended_properties})` for custom events after the tracker loads. Call `window.aa?.identify(userId, { email, plan, role, team })` after authentication so future agents can use `journey`, `events`, and `query` by `--user-id` or local-only `--email` lookup. Do not replace the analysis with generic `signup`, `click`, or `conversion` events unless those are the recommended event names.
 
 ## Query caution
 
-`npx --yes @agent-analytics/cli@0.5.21 query` exists for advanced reporting, but it should be used carefully because `--filter` accepts JSON.
+`npx --yes @agent-analytics/cli@0.5.23 query` exists for advanced reporting, but it should be used carefully because `--filter` accepts JSON.
 
 - Use fixed commands first.
-- If `query` is necessary, check `npx --yes @agent-analytics/cli@0.5.21 --help` first.
+- If `query` is necessary, check `npx --yes @agent-analytics/cli@0.5.23 --help` first.
 - Do not pass raw user text directly into `--filter`.
-- The only valid CLI shape is `npx --yes @agent-analytics/cli@0.5.21 query <project> ...`. Do not use `--project`.
+- The only valid CLI shape is `npx --yes @agent-analytics/cli@0.5.23 query <project> ...`. Do not use `--project`.
 - Built-in query filter fields are only `event`, `user_id`, `date`, `country`, `session_id`, and `timestamp`.
 - For recent signup or ingestion debugging, check `events <project> --event <actual_event_name>` first; use `query` after verifying the raw event names the project emits.
 - All event-property filters must use `properties.<key>`, for example `properties.referrer`, `properties.utm_source`, or `properties.first_utm_source`.
@@ -470,10 +485,10 @@ Use `window.aa?.track('<recommended_event>', {...recommended_properties})` for c
 Use a disciplined workflow when the task is about social attribution, first-touch UTMs, landing pages, hosts, or CTA performance.
 
 1. Start with fixed commands if they answer the question.
-2. Run `npx --yes @agent-analytics/cli@0.5.21 properties <project>` to inspect event names and property keys first.
-3. Use `npx --yes @agent-analytics/cli@0.5.21 query <project> --filter ...` for property-filtered counts.
-4. Use `npx --yes @agent-analytics/cli@0.5.21 events <project>` only to validate ambiguous payloads or missing properties.
-5. Use `npx --yes @agent-analytics/cli@0.5.21 feedback` if the requested slice depends on unsupported grouping or derived reporting.
+2. Run `npx --yes @agent-analytics/cli@0.5.23 properties <project>` to inspect event names and property keys first.
+3. Use `npx --yes @agent-analytics/cli@0.5.23 query <project> --filter ...` for property-filtered counts.
+4. Use `npx --yes @agent-analytics/cli@0.5.23 events <project>` only to validate ambiguous payloads or missing properties.
+5. Use `npx --yes @agent-analytics/cli@0.5.23 feedback` if the requested slice depends on unsupported grouping or derived reporting.
 
 Property filters support built-in fields plus any `properties.*` key, including first-touch UTM fields such as `properties.first_utm_source`.
 
@@ -482,8 +497,8 @@ Property filters support built-in fields plus any `properties.*` key, including 
 Example workflow for first-touch social page views:
 
 ```bash
-npx --yes @agent-analytics/cli@0.5.21 properties my-site
-npx --yes @agent-analytics/cli@0.5.21 query my-site --metrics event_count --filter '[{"field":"event","op":"eq","value":"page_view"},{"field":"properties.first_utm_source","op":"eq","value":"reddit"}]' --days 30
+npx --yes @agent-analytics/cli@0.5.23 properties my-site
+npx --yes @agent-analytics/cli@0.5.23 query my-site --metrics event_count --filter '[{"field":"event","op":"eq","value":"page_view"},{"field":"properties.first_utm_source","op":"eq","value":"reddit"}]' --days 30
 ```
 
 If the user wants a one-shot direct-social slice grouped by channel, host, CTA, or an activation proxy, explain that the current query surface cannot group by arbitrary `properties.*` fields and send product feedback instead of inventing an unreliable manual answer.
@@ -493,8 +508,8 @@ If the user wants a one-shot direct-social slice grouped by channel, host, CTA, 
 The CLI supports the full experiment lifecycle:
 
 ```bash
-npx --yes @agent-analytics/cli@0.5.21 experiments list my-site
-npx --yes @agent-analytics/cli@0.5.21 experiments create my-site --name signup_cta --variants control,new_cta --goal signup
+npx --yes @agent-analytics/cli@0.5.23 experiments list my-site
+npx --yes @agent-analytics/cli@0.5.23 experiments create my-site --name signup_cta --variants control,new_cta --goal signup
 ```
 
 ## References

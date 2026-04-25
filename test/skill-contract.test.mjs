@@ -21,14 +21,14 @@ const autoresearchInitScript = readFileSync(
 const readme = readFileSync(join(root, 'README.md'), 'utf8');
 
 describe('agent-analytics skill contract', () => {
-  it('pins the official CLI to 0.5.21 everywhere', () => {
-    assert.match(skill, /version: 4\.0\.23/);
-    assert.ok(skill.includes('npx --yes @agent-analytics/cli@0.5.21'));
-    assert.ok(readme.includes('npx --yes @agent-analytics/cli@0.5.21'));
+  it('pins the official CLI to 0.5.23 everywhere', () => {
+    assert.match(skill, /version: 4\.0\.24/);
+    assert.ok(skill.includes('npx --yes @agent-analytics/cli@0.5.23'));
+    assert.ok(readme.includes('npx --yes @agent-analytics/cli@0.5.23'));
     assert.match(autoresearchSkill, /version: 1\.0\.6/);
-    assert.ok(autoresearchSkill.includes('npx --yes @agent-analytics/cli@0.5.21'));
-    assert.ok(autoresearchBriefTemplate.includes('npx --yes @agent-analytics/cli@0.5.21'));
-    assert.ok(autoresearchSnapshotScript.includes('npx --yes @agent-analytics/cli@0.5.21'));
+    assert.ok(autoresearchSkill.includes('npx --yes @agent-analytics/cli@0.5.23'));
+    assert.ok(autoresearchBriefTemplate.includes('npx --yes @agent-analytics/cli@0.5.23'));
+    assert.ok(autoresearchSnapshotScript.includes('npx --yes @agent-analytics/cli@0.5.23'));
     assert.equal(/@agent-analytics\/cli@0\.5\.(12|13|14|15|16|17|18|19)/.test(skill), false);
     assert.equal(/@agent-analytics\/cli@0\.5\.(12|13|14|15|16|17|18|19)/.test(readme), false);
     assert.equal(
