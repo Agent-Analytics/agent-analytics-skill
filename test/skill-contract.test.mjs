@@ -67,9 +67,17 @@ describe('agent-analytics skill contract', () => {
     assert.match(skill, /do not install generic events/i);
     assert.match(skill, /create <project> --domain <origin>/i);
     assert.match(skill, /exact tracking snippet/i);
+    assert.match(skill, /base tracker snippet as the start of instrumentation/i);
+    assert.match(skill, /not the full instrumentation plan/i);
+    assert.match(skill, /smallest named set of meaningful events and tracker opt-ins/i);
     assert.match(skill, /meaningful custom events/i);
     assert.match(readme, /project-owned tracker/i);
     assert.match(readme, /meaningful custom events/i);
+    assert.match(readme, /start of instrumentation, not the full instrumentation plan/i);
+    assert.doesNotMatch(skill, /paste (?:the )?snippet and stop/i);
+    assert.doesNotMatch(skill, /copy (?:the )?snippet and stop/i);
+    assert.doesNotMatch(readme, /paste (?:the )?snippet and stop/i);
+    assert.doesNotMatch(readme, /copy (?:the )?snippet and stop/i);
     assert.doesNotMatch(readme, /scan <url> --project <project> --json/i);
     assert.doesNotMatch(readme, /website-analysis preview/i);
   });
@@ -105,8 +113,22 @@ describe('agent-analytics skill contract', () => {
     assert.match(skill, /data-aa-impression/i);
     assert.match(skill, /window\.aa\.track/i);
     assert.match(skill, /server-side tracking/i);
+    assert.match(skill, /named CTA clicks/i);
+    assert.match(skill, /signup intent/i);
+    assert.match(skill, /pricing interactions/i);
+    assert.match(skill, /checkout progress or completion/i);
+    assert.match(skill, /install\/setup steps/i);
+    assert.match(skill, /activation milestones/i);
+    assert.match(skill, /durable server-side outcome events/i);
+    assert.match(skill, /scroll depth/i);
+    assert.match(skill, /form tracking/i);
+    assert.match(skill, /downloads/i);
+    assert.match(skill, /vitals\/errors\/performance/i);
+    assert.match(skill, /SPA tracking/i);
     assert.match(skill, /do not add duplicate custom events/i);
     assert.match(readme, /automatic tracker signals/i);
+    assert.match(readme, /named CTAs, signup intent, pricing interactions, checkout steps, install\/setup progress, activation milestones/i);
+    assert.match(readme, /scroll depth, forms, downloads, vitals, errors, performance, and SPA tracking/i);
   });
 
   it('frames copied handoff as a consented instrumentation task, not a generic prompt', () => {

@@ -218,19 +218,23 @@ When the user asks to install Agent Analytics, add analytics events, or set up t
 
 In CLI setup, first identify the user's intended production origin, start the normal browser login flow if needed, then create or identify the Agent Analytics project whose `allowed_origins` includes that origin. Use detached login only for Paperclip, OpenClaw, issue-based or headless runtimes, or when the local browser callback cannot work. The tracker is for the user's own project and account, not for the agent, not for Agent Analytics' internal use, and not for third-party sites.
 
+Treat the base tracker snippet as the start of instrumentation, not the full instrumentation plan. The snippet gives you automatic traffic, source, session, and device context; the agent still needs to review the local product flow and add the few opt-in events that make growth decisions possible.
+
 Use this setup order:
 
 1. If the user is not logged in, start `login`. Use `login --detached` only for Paperclip, OpenClaw, issue-based or headless runtimes, or when the local browser callback cannot work.
 2. Create or identify the Agent Analytics project with `npx --yes @agent-analytics/cli@0.5.25 create <project> --domain <origin>` or `projects`.
 3. Add the exact tracking snippet returned by `create` or shown in the dashboard for that project.
-4. Review the local product flow and add only the smallest set of meaningful custom events needed for the user's stated goals.
-5. Explain what each event enables before or while installing it.
-6. Verify the first useful event with `npx --yes @agent-analytics/cli@0.5.25 events <project> --event <event_name> --days 7 --limit 20`.
-7. Summarize what the installed events now let the user's agent answer.
+4. Review the local product flow and choose the smallest named set of meaningful events and tracker opt-ins needed for the user's stated goals.
+5. Prefer decision-grade events where relevant: named CTA clicks, signup intent, pricing interactions, checkout progress or completion, install/setup steps, activation milestones, and durable server-side outcome events such as `signup_completed`, `subscription_started`, `install_completed`, `project_created`, `first_event_received`, or the product's own activation event.
+6. Add optional tracker capabilities only when they unlock a concrete growth decision: `data-aa-impression` for meaningful section exposure, scroll depth for long-form or landing-page depth questions, form tracking for lead or signup friction, downloads for asset/install intent, vitals/errors/performance for conversion-impacting quality questions, and SPA tracking for client-side route changes.
+7. Explain what each event or opt-in enables before or while installing it.
+8. Verify the first useful event with `npx --yes @agent-analytics/cli@0.5.25 events <project> --event <event_name> --days 7 --limit 20`.
+9. Summarize what the installed events now let the user's agent answer.
 
-Page views, paths, referrers, UTMs, device/browser fields, country, session IDs, session count, days since first visit, and first-touch attribution are automatic, so do not add duplicate custom events for those signals. Prefer `data-aa-event` attributes for named click intent, `data-aa-impression` for meaningful section exposure, `window.aa.track(...)` for computed client state, server-side tracking for durable outcomes such as `signup_completed`, and `aa.identify(userId, { email, plan, role, team })` plus `aa.set(...)` immediately after auth. Use broad script opt-ins like `data-track-clicks`, scroll depth, errors, forms, downloads, vitals, or performance only when they unlock a concrete decision for the user's project.
+Page views, paths, referrers, UTMs, device/browser fields, country, session IDs, session count, days since first visit, and first-touch attribution are automatic, so do not add duplicate custom events for those signals. Prefer `data-aa-event` attributes for named click intent, `data-aa-impression` for meaningful section exposure, `window.aa.track(...)` for computed client state, server-side tracking for durable outcomes such as `signup_completed`, and `aa.identify(userId, { email, plan, role, team })` plus `aa.set(...)` immediately after auth. Use broad script opt-ins like `data-track-clicks`, scroll depth, errors, forms, downloads, vitals, performance, or SPA tracking only when they unlock a concrete decision for the user's project.
 
-If you need to pass work to another agent, say to use the pinned CLI, create or identify the user's project, install the project-owned tracker with consent, add only meaningful events tied to the repo's workflows, avoid generic tracking, and verify the first useful event.
+If you need to pass work to another agent, say to use the pinned CLI, create or identify the user's project, install the project-owned tracker with consent, treat the base snippet as the start rather than the end, add only meaningful events tied to the repo's workflows, explain what each event enables, avoid generic tracking, and verify the first useful event.
 
 ## First-time setup
 
@@ -456,13 +460,14 @@ The easiest install flow is:
 1. Login if needed with `npx --yes @agent-analytics/cli@0.5.25 login`. Use `login --detached` only for Paperclip, OpenClaw, issue-based or headless runtimes, or when the local browser callback cannot work.
 2. Create or identify the user's project with `npx --yes @agent-analytics/cli@0.5.25 create my-site --domain https://mysite.com`.
 3. Copy the returned tracking snippet into the page before `</body>`.
-4. Add only meaningful custom events tied to the user's product goals and repo workflows.
-5. Deploy.
-6. Verify with `npx --yes @agent-analytics/cli@0.5.25 events my-site --event <first_useful_event> --days 7 --limit 20`.
+4. Treat that snippet as the baseline, not as the full setup. Review the product's local CTA, signup, pricing, checkout, install, onboarding, activation, and retained-use flows.
+5. Add only meaningful custom events or tracker opt-ins tied to the user's product goals and repo workflows, and explain what each one enables.
+6. Deploy.
+7. Verify with `npx --yes @agent-analytics/cli@0.5.25 events my-site --event <first_useful_event> --days 7 --limit 20`.
 
 Use the exact tracking snippet returned by `create` or the dashboard for that project. Do not hardcode a generic tracker snippet when the product has already generated the correct one for the surface. This is user-consented analytics for the user's own project and account.
 
-Use `window.aa?.track('<event_name>', {...properties})` for custom events after the tracker loads. Call `window.aa?.identify(userId, { email, plan, role, team })` after authentication with a stable non-email user ID so future agents can use `journey`, `events`, and `query` by `--user-id` or authenticated `--email` lookup. Do not add generic `signup`, `click`, or `conversion` events unless those exact names match the user's product language and reporting goals.
+Use `window.aa?.track('<event_name>', {...properties})` for custom events after the tracker loads. Call `window.aa?.identify(userId, { email, plan, role, team })` after authentication with a stable non-email user ID so future agents can use `journey`, `events`, and `query` by `--user-id` or authenticated `--email` lookup. Durable outcomes that should not depend on a browser session, such as checkout completion, install completion, activation, or retained server-side use, should be tracked server-side when relevant. Do not add generic `signup`, `click`, or `conversion` events unless those exact names match the user's product language and reporting goals.
 
 ## Query caution
 
