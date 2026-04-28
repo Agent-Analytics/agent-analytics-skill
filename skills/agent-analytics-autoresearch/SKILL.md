@@ -129,12 +129,12 @@ The outer loop prevents the LLM panel from becoming the final judge. LLMs genera
 Use the official CLI when collecting live Agent Analytics data:
 
 ```bash
-npx --yes @agent-analytics/cli@0.5.25 insights "$PROJECT_SLUG" --period 7d
-npx --yes @agent-analytics/cli@0.5.25 pages "$PROJECT_SLUG" --since 7d
-npx --yes @agent-analytics/cli@0.5.25 funnel "$PROJECT_SLUG" --steps "page_view,$PROXY_EVENT,$PRIMARY_EVENT" --since 7d
-npx --yes @agent-analytics/cli@0.5.25 events "$PROJECT_SLUG" --event "$PROXY_EVENT" --days 7 --limit 50
-npx --yes @agent-analytics/cli@0.5.25 events "$PROJECT_SLUG" --event "$PRIMARY_EVENT" --days 7 --limit 50
-npx --yes @agent-analytics/cli@0.5.25 experiments list "$PROJECT_SLUG"
+npx --yes @agent-analytics/cli@0.5.24 insights "$PROJECT_SLUG" --period 7d
+npx --yes @agent-analytics/cli@0.5.24 pages "$PROJECT_SLUG" --since 7d
+npx --yes @agent-analytics/cli@0.5.24 funnel "$PROJECT_SLUG" --steps "page_view,$PROXY_EVENT,$PRIMARY_EVENT" --since 7d
+npx --yes @agent-analytics/cli@0.5.24 events "$PROJECT_SLUG" --event "$PROXY_EVENT" --days 7 --limit 50
+npx --yes @agent-analytics/cli@0.5.24 events "$PROJECT_SLUG" --event "$PRIMARY_EVENT" --days 7 --limit 50
+npx --yes @agent-analytics/cli@0.5.24 experiments list "$PROJECT_SLUG"
 ```
 
 If login is needed, prefer the regular `agent-analytics` skill's browser approval or detached login guidance.
@@ -142,7 +142,7 @@ If login is needed, prefer the regular `agent-analytics` skill's browser approva
 Before interpreting the snapshot, also read the compact project memory:
 
 ```bash
-npx --yes @agent-analytics/cli@0.5.25 context get "$PROJECT_SLUG"
+npx --yes @agent-analytics/cli@0.5.24 context get "$PROJECT_SLUG"
 ```
 
 If the autoresearch run reveals durable product truth that should guide future analytics, use the regular `agent-analytics` skill's project context workflow to read the existing context, merge the compact update, and write it back. Do not store raw round notes or time-bound metric values as project context.
