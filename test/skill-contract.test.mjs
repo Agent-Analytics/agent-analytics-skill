@@ -21,14 +21,14 @@ const autoresearchInitScript = readFileSync(
 const readme = readFileSync(join(root, 'README.md'), 'utf8');
 
 describe('agent-analytics skill contract', () => {
-  it('pins the official CLI to 0.5.23 everywhere', () => {
+  it('pins the official CLI to 0.5.24 everywhere', () => {
     assert.match(skill, /version: 4\.0\.25/);
-    assert.ok(skill.includes('npx --yes @agent-analytics/cli@0.5.23'));
-    assert.ok(readme.includes('npx --yes @agent-analytics/cli@0.5.23'));
+    assert.ok(skill.includes('npx --yes @agent-analytics/cli@0.5.24'));
+    assert.ok(readme.includes('npx --yes @agent-analytics/cli@0.5.24'));
     assert.match(autoresearchSkill, /version: 1\.0\.6/);
-    assert.ok(autoresearchSkill.includes('npx --yes @agent-analytics/cli@0.5.23'));
-    assert.ok(autoresearchBriefTemplate.includes('npx --yes @agent-analytics/cli@0.5.23'));
-    assert.ok(autoresearchSnapshotScript.includes('npx --yes @agent-analytics/cli@0.5.23'));
+    assert.ok(autoresearchSkill.includes('npx --yes @agent-analytics/cli@0.5.24'));
+    assert.ok(autoresearchBriefTemplate.includes('npx --yes @agent-analytics/cli@0.5.24'));
+    assert.ok(autoresearchSnapshotScript.includes('npx --yes @agent-analytics/cli@0.5.24'));
     assert.equal(/@agent-analytics\/cli@0\.5\.(12|13|14|15|16|17|18|19)/.test(skill), false);
     assert.equal(/@agent-analytics\/cli@0\.5\.(12|13|14|15|16|17|18|19)/.test(readme), false);
     assert.equal(
@@ -135,13 +135,20 @@ describe('agent-analytics skill contract', () => {
     assert.match(skill, /requested analytics date range plus one day/i);
     assert.match(skill, /Do not invent unsupported fields/i);
     assert.match(skill, /multi-project or multi-domain/i);
-    assert.match(skill, /portfolio-context get/i);
-    assert.match(skill, /surface_roles/i);
+    assert.match(skill, /identity portfolio/i);
+    assert.match(skill, /portfolios create/i);
+    assert.match(skill, /portfolios update/i);
+    assert.match(skill, /portfolios list/i);
+    assert.match(skill, /privacy-first email lookup/i);
+    assert.doesNotMatch(skill, /portfolio-context get/i);
+    assert.doesNotMatch(skill, /surface_roles/i);
     assert.match(skill, /data-link-domains/i);
     assert.match(skill, /cross-project identity stitching/i);
     assert.match(skill, /decorates links but does not make separate projects share identity/i);
+    assert.match(skill, /server-side portfolio scope/i);
     assert.match(readme, /cross-project identity stitching/i);
-    assert.match(readme, /data-link-domains.*surface_roles/i);
+    assert.match(readme, /data-link-domains.*portfolios create\/update/i);
+    assert.doesNotMatch(readme, /surface_roles/i);
     assert.match(readme, /date annotations/i);
     assert.match(skill, /trial signup plus first item created/i);
     assert.match(skill, /teammate invited/i);

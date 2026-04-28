@@ -35,7 +35,7 @@ The regular Agent Analytics skill teaches an agent how to use the official Agent
 - store compact project goals, activation events, and event-name glossary context
 - store date annotations for major landing page, pricing, onboarding, feature, release, or experiment changes
 - keep that context as a per-project, self-improving memory after scans, instrumentation, analysis, and human corrections
-- configure portfolio context for related projects and pair it with tracker `data-link-domains` for cross-project identity stitching
+- configure identity portfolios for related projects and pair them with tracker `data-link-domains` for cross-project identity stitching
 - scan additional public websites the user owns so the agent can find useful data that is not being collected yet
 - read existing context before analysis, merge before writes, and save only durable product truth instead of noisy metric findings
 - run experiments
@@ -67,7 +67,7 @@ The workflow is based on the public template repo:
 The skill is intentionally pinned to the official CLI invocation:
 
 ```bash
-npx --yes @agent-analytics/cli@0.5.23 <command>
+npx --yes @agent-analytics/cli@0.5.24 <command>
 ```
 
 Agent environments should prefer that exact `npx` form over raw API calls, repo-local scripts, or an already-installed binary unless the user explicitly asks for a different interface.
@@ -89,22 +89,22 @@ https://agentanalytics.sh/analysis/
 In CLI and agent runtimes, the setup flow signs in first, then creates or identifies the matching project before running website analysis. Authenticated scans must name a project whose configured domain matches the scanned hostname:
 
 ```bash
-npx --yes @agent-analytics/cli@0.5.23 login --detached
-npx --yes @agent-analytics/cli@0.5.23 create <project> --domain <url>
-npx --yes @agent-analytics/cli@0.5.23 scan <url> --project <project> --json
+npx --yes @agent-analytics/cli@0.5.24 login --detached
+npx --yes @agent-analytics/cli@0.5.24 create <project> --domain <url>
+npx --yes @agent-analytics/cli@0.5.24 scan <url> --project <project> --json
 ```
 
 The skill uses the analysis output as analytics judgment: install only high-priority `minimum_viable_instrumentation`, explain what each event enables, and avoid generic tracking. When multiple owned surfaces are scanned, compare `current_blindspots` and `minimum_viable_instrumentation` before choosing what to instrument first.
 
 Recommendations include practical `implementation_hint` guidance. Agents should map those hints to tracker.js capabilities instead of inventing generic instrumentation: use `data-aa-event` for named click intent, `data-aa-impression` for meaningful section exposure, `window.aa.track(...)` for computed client state, and server-side tracking for durable outcomes such as completed signup. Do not add custom duplicates for automatic tracker signals like `page_view`, path, referrer, UTMs, device/browser fields, country, session IDs, session count, days since first visit, or first-touch attribution.
 
-For related projects that should share identity, the skill teaches agents to configure both sides of the flow: tracker `data-link-domains` carries the anonymous `_aa` value across domains, while portfolio context `surface_roles` puts separate Agent Analytics projects into the same identity scope.
+For related projects that should share identity, the skill teaches agents to configure both sides of the flow: tracker `data-link-domains` carries the anonymous `_aa` value across domains, while `portfolios create/update` puts separate Agent Analytics projects into the same server-side identity and privacy-first email lookup scope.
 
 For OpenClaw and similar managed runtimes, store CLI auth in a persistent workspace path instead of the default home config path:
 
 ```bash
 export AGENT_ANALYTICS_CONFIG_DIR="$PWD/.openclaw/agent-analytics"
-npx --yes @agent-analytics/cli@0.5.23 auth status
+npx --yes @agent-analytics/cli@0.5.24 auth status
 ```
 
 Normal setup, paid upgrade, and resumed agent work do not require an API key.
@@ -112,7 +112,7 @@ Normal setup, paid upgrade, and resumed agent work do not require an API key.
 When a free account reaches a Pro-only analytics command, the skill should run the blocked command first, then use:
 
 ```bash
-npx --yes @agent-analytics/cli@0.5.23 upgrade-link --detached --reason "<why Pro is needed>" --command "<blocked command>"
+npx --yes @agent-analytics/cli@0.5.24 upgrade-link --detached --reason "<why Pro is needed>" --command "<blocked command>"
 ```
 
 The CLI prints an app-domain payment handoff for the human. The dashboard page may ask the human to sign in, confirms the same account as the CLI, shows the blocked command and reason, and then opens Lemon Squeezy. The agent should run `whoami` after payment, then rerun the blocked command once Pro is active.
