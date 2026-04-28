@@ -34,9 +34,9 @@ The regular Agent Analytics skill teaches an agent how to use the official Agent
 - analyze funnels and retention
 - store compact project goals, activation events, and event-name glossary context
 - store date annotations for major landing page, pricing, onboarding, feature, release, or experiment changes
-- keep that context as a per-project, self-improving memory after scans, instrumentation, analysis, and human corrections
+- keep that context as a per-project, self-improving memory after instrumentation, analysis, and human corrections
 - configure identity portfolios for related projects and pair them with tracker `data-link-domains` for cross-project identity stitching
-- scan additional public websites the user owns so the agent can find useful data that is not being collected yet
+- install the project-owned tracker with consent and verify the first useful event
 - read existing context before analysis, merge before writes, and save only durable product truth instead of noisy metric findings
 - run experiments
 
@@ -67,7 +67,7 @@ The workflow is based on the public template repo:
 The skill is intentionally pinned to the official CLI invocation:
 
 ```bash
-npx --yes @agent-analytics/cli@0.5.24 <command>
+npx --yes @agent-analytics/cli@0.5.25 <command>
 ```
 
 Agent environments should prefer that exact `npx` form over raw API calls, repo-local scripts, or an already-installed binary unless the user explicitly asks for a different interface.
@@ -75,28 +75,22 @@ Agent environments should prefer that exact `npx` form over raw API calls, repo-
 The published skill now teaches the authenticated CLI setup flow:
 
 ```text
-Set up Agent Analytics for this project. If browser approval is needed, open it and wait for me. I will sign in with Google or GitHub and approve it. Then create or identify the matching Agent Analytics project, run website analysis for this site so you know what my agent should track first, install only the high-priority minimum viable instrumentation, and verify the first useful recommended event.
+Set up Agent Analytics for this project. If browser approval is needed, open it and wait for me. I will sign in with Google or GitHub and approve it. If the browser callback cannot resume you, ask me for the finish code as a fallback. After that, create or identify the matching Agent Analytics project, install the project-owned tracker, add only meaningful custom events tied to this repo's product workflows, explain what each event enables, and verify the first useful event.
 ```
 
-For deeper product analysis, the skill should also scan additional public websites the user owns, such as docs, pricing, support, signup, changelog, launch, or demo pages. The scanner is not only a way to feed the agent existing analytics data; it gives the agent product eyes on data that may not be collected yet.
-
-Anonymous website-analysis preview is available on the public web scanner:
-
-```text
-https://agentanalytics.sh/analysis/
-```
-
-In CLI and agent runtimes, the setup flow signs in first, then creates or identifies the matching project before running website analysis. Authenticated scans must name a project whose configured domain matches the scanned hostname:
+In Claude Code, Codex, Cursor, and local CLI runtimes, the setup flow signs in with the normal browser approval first, then creates or identifies the matching project before installing the project-owned tracker:
 
 ```bash
-npx --yes @agent-analytics/cli@0.5.24 login --detached
-npx --yes @agent-analytics/cli@0.5.24 create <project> --domain <url>
-npx --yes @agent-analytics/cli@0.5.24 scan <url> --project <project> --json
+npx --yes @agent-analytics/cli@0.5.25 login
+npx --yes @agent-analytics/cli@0.5.25 create <project> --domain <url>
+npx --yes @agent-analytics/cli@0.5.25 events <project> --event <first_useful_event> --days 7 --limit 20
 ```
 
-The skill uses the analysis output as analytics judgment: install only high-priority `minimum_viable_instrumentation`, explain what each event enables, and avoid generic tracking. When multiple owned surfaces are scanned, compare `current_blindspots` and `minimum_viable_instrumentation` before choosing what to instrument first.
+Use `login --detached` only for Paperclip, OpenClaw, issue-based or headless runtimes, or when the local browser callback cannot work.
 
-Recommendations include practical `implementation_hint` guidance. Agents should map those hints to tracker.js capabilities instead of inventing generic instrumentation: use `data-aa-event` for named click intent, `data-aa-impression` for meaningful section exposure, `window.aa.track(...)` for computed client state, and server-side tracking for durable outcomes such as completed signup. Do not add custom duplicates for automatic tracker signals like `page_view`, path, referrer, UTMs, device/browser fields, country, session IDs, session count, days since first visit, or first-touch attribution.
+The `create` command returns the exact tracking snippet for the project. Agents should add that snippet before `</body>`, review the local product flow, install only meaningful events tied to the user's goals, explain what each event enables, and avoid generic tracking.
+
+Agents should map event needs to tracker.js capabilities instead of inventing generic instrumentation: use `data-aa-event` for named click intent, `data-aa-impression` for meaningful section exposure, `window.aa.track(...)` for computed client state, and server-side tracking for durable outcomes such as completed signup. Do not add custom duplicates for automatic tracker signals like `page_view`, path, referrer, UTMs, device/browser fields, country, session IDs, session count, days since first visit, or first-touch attribution.
 
 For related projects that should share identity, the skill teaches agents to configure both sides of the flow: tracker `data-link-domains` carries the anonymous `_aa` value across domains, while `portfolios create/update` puts separate Agent Analytics projects into the same server-side identity and privacy-first email lookup scope.
 
@@ -104,7 +98,7 @@ For OpenClaw and similar managed runtimes, store CLI auth in a persistent worksp
 
 ```bash
 export AGENT_ANALYTICS_CONFIG_DIR="$PWD/.openclaw/agent-analytics"
-npx --yes @agent-analytics/cli@0.5.24 auth status
+npx --yes @agent-analytics/cli@0.5.25 auth status
 ```
 
 Normal setup, paid upgrade, and resumed agent work do not require an API key.
@@ -112,7 +106,7 @@ Normal setup, paid upgrade, and resumed agent work do not require an API key.
 When a free account reaches a Pro-only analytics command, the skill should run the blocked command first, then use:
 
 ```bash
-npx --yes @agent-analytics/cli@0.5.24 upgrade-link --detached --reason "<why Pro is needed>" --command "<blocked command>"
+npx --yes @agent-analytics/cli@0.5.25 upgrade-link --detached --reason "<why Pro is needed>" --command "<blocked command>"
 ```
 
 The CLI prints an app-domain payment handoff for the human. The dashboard page may ask the human to sign in, confirms the same account as the CLI, shows the blocked command and reason, and then opens Lemon Squeezy. The agent should run `whoami` after payment, then rerun the blocked command once Pro is active.

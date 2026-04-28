@@ -21,14 +21,14 @@ const autoresearchInitScript = readFileSync(
 const readme = readFileSync(join(root, 'README.md'), 'utf8');
 
 describe('agent-analytics skill contract', () => {
-  it('pins the official CLI to 0.5.24 everywhere', () => {
-    assert.match(skill, /version: 4\.0\.25/);
-    assert.ok(skill.includes('npx --yes @agent-analytics/cli@0.5.24'));
-    assert.ok(readme.includes('npx --yes @agent-analytics/cli@0.5.24'));
+  it('pins the official CLI to 0.5.25 everywhere', () => {
+    assert.match(skill, /version: 4\.0\.27/);
+    assert.ok(skill.includes('npx --yes @agent-analytics/cli@0.5.25'));
+    assert.ok(readme.includes('npx --yes @agent-analytics/cli@0.5.25'));
     assert.match(autoresearchSkill, /version: 1\.0\.6/);
-    assert.ok(autoresearchSkill.includes('npx --yes @agent-analytics/cli@0.5.24'));
-    assert.ok(autoresearchBriefTemplate.includes('npx --yes @agent-analytics/cli@0.5.24'));
-    assert.ok(autoresearchSnapshotScript.includes('npx --yes @agent-analytics/cli@0.5.24'));
+    assert.ok(autoresearchSkill.includes('npx --yes @agent-analytics/cli@0.5.25'));
+    assert.ok(autoresearchBriefTemplate.includes('npx --yes @agent-analytics/cli@0.5.25'));
+    assert.ok(autoresearchSnapshotScript.includes('npx --yes @agent-analytics/cli@0.5.25'));
     assert.equal(/@agent-analytics\/cli@0\.5\.(12|13|14|15|16|17|18|19)/.test(skill), false);
     assert.equal(/@agent-analytics\/cli@0\.5\.(12|13|14|15|16|17|18|19)/.test(readme), false);
     assert.equal(
@@ -59,26 +59,29 @@ describe('agent-analytics skill contract', () => {
     assert.equal(/login --token/i.test(readme), false);
   });
 
-  it('requires analysis-first setup before installing events', () => {
-    assert.match(skill, /analysis-first/i);
+  it('requires consent-based project-owned setup before installing events', () => {
+    assert.match(skill, /Consent-based tracker setup policy/i);
+    assert.match(skill, /project-owned workflow/i);
     assert.match(skill, /do not guess/i);
     assert.match(skill, /do not overtrack/i);
     assert.match(skill, /do not install generic events/i);
-    assert.match(skill, /Anonymous website-analysis preview is available on the public web scanner/i);
-    assert.match(skill, /sign in first/i);
-    assert.match(skill, /scan <url> --project <project> --json/i);
-    assert.match(readme, /Anonymous website-analysis preview is available on the public web scanner/i);
-    assert.match(readme, /scan <url> --project <project> --json/i);
+    assert.match(skill, /create <project> --domain <origin>/i);
+    assert.match(skill, /exact tracking snippet/i);
+    assert.match(skill, /meaningful custom events/i);
+    assert.match(readme, /project-owned tracker/i);
+    assert.match(readme, /meaningful custom events/i);
+    assert.doesNotMatch(readme, /scan <url> --project <project> --json/i);
+    assert.doesNotMatch(readme, /website-analysis preview/i);
   });
 
-  it('teaches agents to scan additional owned surfaces for uncollected data', () => {
-    assert.match(skill, /additional public websites the user owns/i);
-    assert.match(skill, /product eyes/i);
-    assert.match(skill, /not be collecting yet/i);
-    assert.match(skill, /Only scan sites the user owns/i);
-    assert.match(skill, /Compare `current_blindspots` and `minimum_viable_instrumentation`/i);
-    assert.match(readme, /scan additional public websites the user owns/i);
-    assert.match(readme, /data that may not be collected yet/i);
+  it('keeps local runtimes on browser login and detached as the fallback path', () => {
+    assert.match(skill, /Claude Code, Codex, Cursor, and local CLI runtimes/i);
+    assert.match(skill, /npx --yes @agent-analytics\/cli@0\.5\.25 login/i);
+    assert.match(skill, /do not choose detached login just because/i);
+    assert.match(skill, /Paperclip, OpenClaw, and other issue-based runtimes/i);
+    assert.match(skill, /finish code/i);
+    assert.match(readme, /normal browser approval first/i);
+    assert.match(readme, /Use `login --detached` only for Paperclip, OpenClaw, issue-based or headless runtimes/i);
   });
 
   it('documents persistent OpenClaw auth storage', () => {
@@ -89,12 +92,12 @@ describe('agent-analytics skill contract', () => {
     assert.match(skill, /Never commit .*config\.json/i);
   });
 
-  it('uses minimum viable instrumentation and first useful event verification language', () => {
-    assert.match(skill, /minimum viable instrumentation/i);
-    assert.match(skill, /implementation_hint/i);
-    assert.match(skill, /first useful recommended event/i);
+  it('uses meaningful event verification language', () => {
+    assert.match(skill, /exact tracking snippet/i);
+    assert.match(skill, /first useful event/i);
     assert.match(skill, /events <project>/i);
     assert.match(skill, /what the installed events now let the user's agent answer/i);
+    assert.match(readme, /verify the first useful event/i);
   });
 
   it('maps analysis recommendations to tracker capabilities instead of duplicate generic events', () => {
@@ -106,10 +109,14 @@ describe('agent-analytics skill contract', () => {
     assert.match(readme, /automatic tracker signals/i);
   });
 
-  it('frames copied handoff as analytics judgment, not a generic prompt', () => {
-    assert.match(skill, /Give your agent analytics judgment/i);
-    assert.match(skill, /install only high-priority/i);
+  it('frames copied handoff as a consented instrumentation task, not a generic prompt', () => {
+    assert.match(skill, /Set up Agent Analytics for this project/i);
+    assert.match(skill, /browser callback cannot resume/i);
+    assert.match(skill, /project-owned tracker/i);
+    assert.match(skill, /meaningful custom events/i);
     assert.match(skill, /explain what each event enables/i);
+    assert.match(readme, /browser callback cannot resume/i);
+    assert.match(readme, /project-owned tracker/i);
   });
 
   it('teaches compact project context and event-name glossary upkeep', () => {
