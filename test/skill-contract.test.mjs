@@ -193,6 +193,29 @@ describe('agent-analytics skill contract', () => {
     assert.match(skill, /next analysis starts smarter/i);
   });
 
+  it('teaches agents to classify project surface and portfolio scope before action', () => {
+    assert.match(skill, /Classification before action/i);
+    assert.match(skill, /project-first and portfolio-aware/i);
+    assert.match(skill, /project is the unit of local product learning/i);
+    assert.match(skill, /One project can include many surfaces/i);
+    assert.match(skill, /portfolio is the cross-project growth system for related projects/i);
+    assert.match(skill, /intentionally grouped portfolio projects/i);
+    assert.match(skill, /Subdomains are usually surfaces/i);
+    assert.match(skill, /mobile app is a surface/i);
+    assert.match(skill, /free tool is a surface/i);
+    assert.match(skill, /Localhost.*setup or QA surfaces/i);
+    assert.match(skill, /Separate products.*separate projects under one portfolio/i);
+    assert.match(skill, /do not treat it as immediate failure/i);
+    assert.match(skill, /Clarify which project and surface/i);
+    assert.match(skill, /Project-local setup or analysis/i);
+    assert.match(skill, /Related-project grouping/i);
+    assert.match(skill, /Shared goals, roles, and milestones/i);
+    assert.match(skill, /guides\/projects-surfaces-portfolios/i);
+    assert.doesNotMatch(skill, /Portfolio\s*(?:→|->)\s*Projects\s*(?:→|->)\s*Surfaces/i);
+    assert.match(readme, /classify whether work belongs to a project, a surface inside a project, or a related-project portfolio/i);
+    assert.match(readme, /guides\/projects-surfaces-portfolios/i);
+  });
+
   it('teaches Autoresearch to use project context as self-improving product memory', () => {
     assert.match(autoresearchSkill, /context get <project>/i);
     assert.match(autoresearchSkill, /project_context/i);

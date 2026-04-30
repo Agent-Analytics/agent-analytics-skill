@@ -27,6 +27,7 @@ This repo intentionally contains only public skill definitions. It does not incl
 
 The regular Agent Analytics skill teaches an agent how to use the official Agent Analytics CLI to:
 
+- classify whether work belongs to a project, a surface inside a project, or a related-project portfolio before setup, analytics reads, or instrumentation recommendations
 - create projects
 - install tracking
 - inspect traffic and events
@@ -35,7 +36,7 @@ The regular Agent Analytics skill teaches an agent how to use the official Agent
 - store compact project goals, activation events, and event-name glossary context
 - store date annotations for major landing page, pricing, onboarding, feature, release, or experiment changes
 - keep that context as a per-project, self-improving memory after instrumentation, analysis, and human corrections
-- configure identity portfolios for related projects and pair them with tracker `data-link-domains` for cross-project identity stitching
+- configure portfolios for related projects and pair them with tracker `data-link-domains` for cross-project identity stitching when configured within intentionally grouped portfolio projects
 - install the project-owned tracker with consent and verify the first useful event
 - read existing context before analysis, merge before writes, and save only durable product truth instead of noisy metric findings
 - run experiments
@@ -77,6 +78,10 @@ The published skill now teaches the authenticated CLI setup flow:
 ```text
 Set up Agent Analytics for this project. If browser approval is needed, open it and wait for me. I will sign in with Google or GitHub and approve it. If the browser callback cannot resume you, ask me for the finish code as a fallback. After that, create or identify the matching Agent Analytics project, install the project-owned tracker, add only meaningful custom events tied to this repo's product workflows, explain what each event enables, and verify the first useful event.
 ```
+
+Before an agent runs setup, queries analytics, or recommends instrumentation, it should classify the scope using the product model explained in the canonical docs guide: <https://docs.agentanalytics.sh/guides/projects-surfaces-portfolios/>. A project is the unit of local product learning. A project can include many surfaces, such as app, docs, blog, mobile, local preview, or subdomain surfaces. A portfolio is the cross-project growth system for related projects; it connects related projects without collapsing project-local activation, retention, lifecycle, releases, experiments, or goals. Cross-project identity applies only when configured within intentionally grouped portfolio projects.
+
+The skill tells agents not to treat a domain mismatch as immediate failure. Domains, subdomains, localhost URLs, and preview URLs are surface URLs or origins. If a URL is ambiguous, the agent should clarify the intended project and surface, then use project commands for project-local work, `portfolios` commands for related-project grouping, and portfolio context only for shared goals, roles, and milestones across related projects.
 
 In Claude Code, Codex, Cursor, and local CLI runtimes, the setup flow signs in with the normal browser approval first, then creates or identifies the matching project before installing the project-owned tracker:
 

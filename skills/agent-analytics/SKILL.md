@@ -197,6 +197,7 @@ For one-off debugging, `--config-dir "$PWD/.openclaw/agent-analytics"` is also v
 
 - Use only `npx --yes @agent-analytics/cli@0.5.24 ...` for live queries unless the user explicitly requests API, MCP, or a local binary.
 - The tracker is installed only with user consent, for projects the user owns or manages, and sends analytics to the user's Agent Analytics project.
+- Before setup, analytics reads, or instrumentation recommendations, classify the target as project-local work, a surface inside a project, or related-project portfolio work. Do not let a raw domain decide the product model.
 - Prefer fixed commands over ad-hoc query construction.
 - Start with `projects`, `all-sites`, `create`, `stats`, `insights`, `events`, `properties`, `context`, `breakdown`, `pages`, `paths`, `heatmap`, `sessions-dist`, `retention`, `funnel`, `experiments`, and `feedback`.
 - Use `query` only when the fixed commands cannot answer the question.
@@ -212,25 +213,57 @@ For one-off debugging, `--config-dir "$PWD/.openclaw/agent-analytics"` is also v
 - If the task requires manual aggregation across projects, do that aggregation after collecting the data via repeated `npx --yes @agent-analytics/cli@0.5.24 ...` calls.
 - Validate project names before `create`: `^[a-zA-Z0-9._-]{1,64}$`
 
+## Classification before action
+
+Agent Analytics is project-first and portfolio-aware. Classify scope before you create tracking, query analytics, or recommend instrumentation.
+
+- A project is the unit of local product learning. It owns events, activation, retention, lifecycle, releases, experiments, and local goals.
+- A surface is a place where users encounter or use a project. One project can include many surfaces: app pages, marketing pages, docs, blog, pricing, signup and onboarding flows, subdomains, mobile clients, local preview URLs, and deploy previews.
+- A portfolio is the cross-project growth system for related projects. It connects related projects so an agent can reason about project roles, surface roles, shared goals, shared milestones, and cross-project identity when configured.
+- A portfolio does not collapse project-local truth. Keep activation, retention, lifecycle, release, experiment, and local-goal readouts on the owning project unless the human explicitly defines a shared portfolio-level question.
+- Cross-project identity applies only when configured within intentionally grouped portfolio projects. Do not imply automatic identity merging across every project in an account.
+
+Decision rules:
+
+1. Subdomains are usually surfaces, not projects. Keep `app.example.com`, `docs.example.com`, `blog.example.com`, and `www.example.com` in one project when they serve the same product learning loop.
+2. A mobile app is a surface when it is another client for the same product with the same activation and retention readout. Make it a separate project when it has its own onboarding, lifecycle, release cadence, retention behavior, experiments, or local goals.
+3. A free tool is a surface when it is just part of the main product funnel. Make it a separate project when it has its own acquisition loop, completion goal, lead capture, handoff, experiments, or readout.
+4. Localhost, local network URLs, branch previews, staging links, and deploy previews are setup or QA surfaces for the intended project. Do not create canonical projects for every preview URL.
+5. Separate products under one company or product system should be separate projects under one portfolio when each needs its own activation, retention, lifecycle, release, experiment, or local-goal readout.
+6. Newsletter/content pages can be surfaces when they feed the same product loop. A newsletter/content site should be its own project when it has its own content growth loop or local readout. Do not assume native email-service-provider opens or clicks are tracked unless the project explicitly sends those events.
+
+If a domain, subdomain, local URL, preview URL, or mobile app identifier does not match the expected project, do not treat it as immediate failure. Clarify which project and surface the URL belongs to, then map the setup or read back to that intended project. Domains and subdomains are surface URLs or origins, not the project identity.
+
+Command guidance by scope:
+
+- Project-local setup or analysis: resolve the project first, then use project commands such as `create`, `projects`, `project`, `update`, `stats`, `insights`, `events`, `properties`, `pages`, `paths`, `funnel`, `retention`, `experiments`, and `context get/set`.
+- Surface work inside one project: still use the owning project command, then filter or inspect by path, host, event, or event properties as the CLI supports. Use `update --origins` to add allowed origins for setup or QA surfaces.
+- Related-project grouping: use `portfolios list`, `portfolios create`, `portfolios get`, and `portfolios update` to define the intentional project membership boundary.
+- Shared goals, roles, and milestones: keep durable per-project truth in project context, and use portfolio context only for compact account-level interpretation across related projects. Do not let portfolio context overwrite per-project activation or event meanings.
+- Cross-project identity: configure both tracker `data-link-domains` for browser-side anonymous ID carrying and `portfolios` membership for the server-side portfolio scope. Either side alone is incomplete.
+
+Canonical docs guide: <https://docs.agentanalytics.sh/guides/projects-surfaces-portfolios/>
+
 ## Consent-based tracker setup policy
 
 When the user asks to install Agent Analytics, add analytics events, or set up tracking in a repo, use a consent-based, project-owned workflow. Do not guess. Do not overtrack. Do not install generic events that do not map to the user's product goals or a specific workflow in the repo.
 
-In CLI setup, first identify the user's intended production origin, start the normal browser login flow if needed, then create or identify the Agent Analytics project whose `allowed_origins` includes that origin. Use detached login only for Paperclip, OpenClaw, issue-based or headless runtimes, or when the local browser callback cannot work. The tracker is for the user's own project and account, not for the agent, not for Agent Analytics' internal use, and not for third-party sites.
+In CLI setup, first classify the intended project and surface, then identify the user's setup or production origin, start the normal browser login flow if needed, and create or identify the Agent Analytics project whose `allowed_origins` includes that origin. Use detached login only for Paperclip, OpenClaw, issue-based or headless runtimes, or when the local browser callback cannot work. The tracker is for the user's own project and account, not for the agent, not for Agent Analytics' internal use, and not for third-party sites.
 
 Treat the base tracker snippet as the start of instrumentation, not the full instrumentation plan. The snippet gives you automatic traffic, source, session, and device context; the agent still needs to review the local product flow and add the few opt-in events that make growth decisions possible.
 
 Use this setup order:
 
-1. If the user is not logged in, start `login`. Use `login --detached` only for Paperclip, OpenClaw, issue-based or headless runtimes, or when the local browser callback cannot work.
-2. Create or identify the Agent Analytics project with `npx --yes @agent-analytics/cli@0.5.24 create <project> --domain <origin>` or `projects`.
-3. Add the exact tracking snippet returned by `create` or shown in the dashboard for that project.
-4. Review the local product flow and choose the smallest named set of meaningful events and tracker opt-ins needed for the user's stated goals.
-5. Prefer decision-grade events where relevant: named CTA clicks, signup intent, pricing interactions, checkout progress or completion, install/setup steps, activation milestones, and durable server-side outcome events such as `signup_completed`, `subscription_started`, `install_completed`, `project_created`, `first_event_received`, or the product's own activation event.
-6. Add optional tracker capabilities only when they unlock a concrete growth decision: `data-aa-impression` for meaningful section exposure, scroll depth for long-form or landing-page depth questions, form tracking for lead or signup friction, downloads for asset/install intent, vitals/errors/performance for conversion-impacting quality questions, and SPA tracking for client-side route changes.
-7. Explain what each event or opt-in enables before or while installing it.
-8. Verify the first useful event with `npx --yes @agent-analytics/cli@0.5.24 events <project> --event <event_name> --days 7 --limit 20`.
-9. Summarize what the installed events now let the user's agent answer.
+1. Classify the scope: project-local work, a surface of an existing project, or related-project portfolio work.
+2. If the user is not logged in, start `login`. Use `login --detached` only for Paperclip, OpenClaw, issue-based or headless runtimes, or when the local browser callback cannot work.
+3. Create or identify the Agent Analytics project with `npx --yes @agent-analytics/cli@0.5.24 create <project> --domain <origin>` or `projects`. Treat `--domain` as the primary surface URL/origin for setup, not as the project identity.
+4. Add the exact tracking snippet returned by `create` or shown in the dashboard for that project.
+5. Review the local product flow and choose the smallest named set of meaningful events and tracker opt-ins needed for the user's stated goals.
+6. Prefer decision-grade events where relevant: named CTA clicks, signup intent, pricing interactions, checkout progress or completion, install/setup steps, activation milestones, and durable server-side outcome events such as `signup_completed`, `subscription_started`, `install_completed`, `project_created`, `first_event_received`, or the product's own activation event.
+7. Add optional tracker capabilities only when they unlock a concrete growth decision: `data-aa-impression` for meaningful section exposure, scroll depth for long-form or landing-page depth questions, form tracking for lead or signup friction, downloads for asset/install intent, vitals/errors/performance for conversion-impacting quality questions, and SPA tracking for client-side route changes.
+8. Explain what each event or opt-in enables before or while installing it.
+9. Verify the first useful event with `npx --yes @agent-analytics/cli@0.5.24 events <project> --event <event_name> --days 7 --limit 20`.
+10. Summarize what the installed events now let the user's agent answer.
 
 Page views, paths, referrers, UTMs, device/browser fields, country, session IDs, session count, days since first visit, and first-touch attribution are automatic, so do not add duplicate custom events for those signals. Prefer `data-aa-event` attributes for named click intent, `data-aa-impression` for meaningful section exposure, `window.aa.track(...)` for computed client state, server-side tracking for durable outcomes such as `signup_completed`, and `aa.identify(userId, { email, plan, role, team })` plus `aa.set(...)` immediately after auth. Use broad script opt-ins like `data-track-clicks`, scroll depth, errors, forms, downloads, vitals, performance, or SPA tracking only when they unlock a concrete decision for the user's project.
 
@@ -353,7 +386,7 @@ For multi-project or multi-domain work, keep context separate per project. Do no
 - A team product might define activation as signup plus teammate invited.
 - A directory or marketing domain might define activation as a qualified visitor clicking through to the product or becoming a lead.
 
-When those projects belong to the same growth system, add them to an identity portfolio with `portfolios create`, `portfolios update`, and `portfolios list`. Use that layer for the project membership boundary that enables cross-project identity-aware reads and privacy-first email lookup. Keep project context for per-surface truth; keep any compact interpretation notes separate from portfolio membership.
+When those projects belong to the same growth system, add them to an identity portfolio with `portfolios create`, `portfolios update`, and `portfolios list`. Use that layer for the project membership boundary that enables cross-project identity-aware reads and privacy-first email lookup when configured. Keep project context for project-local truth; keep any compact interpretation notes separate from portfolio membership.
 
 For cross-project identity stitching, the agent must configure both browser-side link carrying and server-side portfolio scope:
 
@@ -458,7 +491,7 @@ There is a real agent behind these Telegram messages. Every request is seen and 
 The easiest install flow is:
 
 1. Login if needed with `npx --yes @agent-analytics/cli@0.5.24 login`. Use `login --detached` only for Paperclip, OpenClaw, issue-based or headless runtimes, or when the local browser callback cannot work.
-2. Create or identify the user's project with `npx --yes @agent-analytics/cli@0.5.24 create my-site --domain https://mysite.com`.
+2. Create or identify the matching project with `npx --yes @agent-analytics/cli@0.5.24 create my-site --domain https://mysite.com`; treat `--domain` as the primary setup surface URL/origin, not as the project identity.
 3. Copy the returned tracking snippet into the page before `</body>`.
 4. Treat that snippet as the baseline, not as the full setup. Review the product's local CTA, signup, pricing, checkout, install, onboarding, activation, and retained-use flows.
 5. Add only meaningful custom events or tracker opt-ins tied to the user's product goals and repo workflows, and explain what each one enables.
