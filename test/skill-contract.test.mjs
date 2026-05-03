@@ -22,7 +22,7 @@ const readme = readFileSync(join(root, 'README.md'), 'utf8');
 
 describe('agent-analytics skill contract', () => {
   it('pins the official CLI to 0.5.28 everywhere', () => {
-    assert.match(skill, /version: 4\.0\.28/);
+    assert.match(skill, /version: 4\.0\.29/);
     assert.ok(skill.includes('npx --yes @agent-analytics/cli@0.5.28'));
     assert.ok(readme.includes('npx --yes @agent-analytics/cli@0.5.28'));
     assert.match(autoresearchSkill, /version: 1\.0\.7/);
@@ -191,6 +191,26 @@ describe('agent-analytics skill contract', () => {
     assert.match(skill, /trial signup plus first item created/i);
     assert.match(skill, /teammate invited/i);
     assert.match(skill, /next analysis starts smarter/i);
+  });
+
+  it('teaches analytics-oriented funnel diagnosis instead of raw-number dumps', () => {
+    assert.match(skill, /Analytics answer contract/i);
+    assert.match(skill, /Lead with the decision, then prove it with the metric/i);
+    assert.match(skill, /Best bet or diagnosis/i);
+    assert.match(skill, /Metric definition/i);
+    assert.match(skill, /strict survivors/i);
+    assert.match(skill, /Signup is not activation/i);
+    assert.match(skill, /retained activated users/i);
+    assert.match(skill, /right-censored/i);
+    assert.match(skill, /smallest event or property that unlocks the growth question/i);
+    assert.match(skill, /Funnel analyst behavior/i);
+    assert.match(skill, /context get my-site/i);
+    assert.match(skill, /--steps-json/i);
+    assert.match(skill, /largest absolute loss and largest relative loss/i);
+    assert.match(skill, /data-link-domains/i);
+    assert.match(skill, /do not claim strict user conversion across projects/i);
+    assert.match(skill, /Portfolio surface-role diagnosis/i);
+    assert.doesNotMatch(skill, /generic "track more events"/i);
   });
 
   it('teaches agents to classify project surface and portfolio scope before action', () => {

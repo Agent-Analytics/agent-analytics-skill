@@ -1,7 +1,7 @@
 ---
 name: agent-analytics
 description: "Headless analytics management for AI builders shipping multi-surface products. Let your agent create projects, install tracking, compare surfaces, query results, and run growth analysis from code, chat, or the terminal."
-version: 4.0.28
+version: 4.0.29
 author: dannyshmueli
 license: MIT
 repository: https://github.com/Agent-Analytics/agent-analytics-skill
@@ -212,6 +212,53 @@ For one-off debugging, `--config-dir "$PWD/.openclaw/agent-analytics"` is also v
   - "page views" means `event_count` filtered to `event=page_view`
 - If the task requires manual aggregation across projects, do that aggregation after collecting the data via repeated `npx --yes @agent-analytics/cli@0.5.28 ...` calls.
 - Validate project names before `create`: `^[a-zA-Z0-9._-]{1,64}$`
+
+## Analytics answer contract
+
+Agent Analytics answers should sound like product and growth analysis, not database output. Lead with the decision, then prove it with the metric.
+
+Use this answer shape for funnels, retention, paths, experiments, attribution, and growth audits:
+
+1. Best bet or diagnosis: the product/growth action or lifecycle issue.
+2. Metric definition: population, window, event names, identity basis, and conversion window.
+3. Evidence: counts, rates, raw activity, strict survivors, movement, and the biggest driver.
+4. Segment, cohort, or surface: where the issue is concentrated.
+5. Caveat: identity, sample size, right-censoring, attribution, causality, or instrumentation limits.
+6. Next query or action: one bounded follow-up, not a generic list.
+
+Good pattern:
+
+```text
+Best bet: fix activation setup friction.
+Metric: app onboarding view -> setup copy -> signup -> project_created -> first_event_received within 7d.
+Evidence: raw signup/project activity exists, but strict survivors collapse before first_event_received.
+Diagnosis: activation bottleneck, not acquisition quality.
+Caveat: cross-project identity only counts when portfolio membership and link-domain carrying are configured.
+Next: split setup-copy users by selected agent/runtime and first_event_received.
+```
+
+Bad pattern:
+
+```text
+Here are the numbers.
+Step 1: 100 users
+Step 2: 12 users
+Conversion: 12%
+```
+
+Metric skepticism rules:
+
+- Funnels diagnose leakage. They do not prove why users dropped.
+- Signup is not activation. Activation is the first measurable proxy for meaningful value.
+- Do not rank channels by signups alone. Prefer activated users, retained activated users, revenue, or payback when available.
+- Do not answer retention with blended active users alone. Use cohorts and compare cohorts at the same age.
+- Do not call correlation causation unless there is an experiment or causal design.
+- Do not say an experiment won just because conversion moved up. Check guardrails, sample, uncertainty, and practical significance.
+- Do not recommend broad instrumentation. Add the smallest event or property that unlocks the growth question.
+
+Use analytics lingo deliberately: activation, first value, time to value, cohort, segment, denominator, conversion window, retained activated users, channel quality, guardrail metric, input metric, growth loop, loop constraint, instrumentation gap, tracking plan, identity resolution, directional, right-censored, sample is small, and practical significance.
+
+Avoid vague output: generic "improve onboarding," generic "track more events," "best channel" from signup volume, "retention is up" from WAU alone, and "ship it" from a conversion lift alone.
 
 ## Classification before action
 
@@ -430,6 +477,51 @@ Prefer this workflow:
 3. Recommend the next bounded analysis step: a funnel, retention check, or experiment.
 
 Do not use paths for long-cycle cross-session attribution. Treat it as session-local: the goal only counts when it occurs in the same session.
+
+## Funnel analyst behavior
+
+Use `funnel` when the user asks where conversion drops, whether onboarding works, which step blocks activation, or how an ordered journey performs.
+
+Before running a funnel, resolve the project and read context:
+
+```bash
+npx --yes @agent-analytics/cli@0.5.28 context get my-site
+```
+
+Use project context to find the activation event, event glossary, and relevant annotations. If the context is empty, define the funnel assumptions explicitly instead of pretending the metric is canonical.
+
+Prefer structured steps when labels or property filters matter:
+
+```bash
+npx --yes @agent-analytics/cli@0.5.28 funnel my-site --steps-json '[{"event":"page_view","label":"Landing viewed","filters":[{"field":"properties.path","op":"eq","value":"/"}]},{"event":"signup_cta_clicked","label":"Signup intent"},{"event":"signup_completed","label":"Signup"},{"event":"first_event_received","label":"First value"}]' --since 7d --json
+```
+
+For every funnel answer:
+
+1. State the metric definition: population, steps, window, identity basis, conversion window, and whether steps came from request or project context.
+2. Separate `raw_activity`, joinable entities, and `strict_survivors`. Raw activity can exist even when strict conversion is zero.
+3. Find both largest absolute loss and largest relative loss. The biggest percentage drop is not always the highest-impact fix.
+4. Label the lifecycle issue: acquisition, activation, retention, referral/collaboration, revenue, or instrumentation gap.
+5. Explain the surface role: homepage = route selection, onboarding/app = activation, docs = setup support, blog/content = intent shaping, scanner/free tool = cold-start preview.
+6. Recommend one next query or fix at the bottleneck.
+
+Portfolio and cross-project funnel caveats:
+
+- A portfolio does not erase project-local truth. Keep each project's activation, retention, lifecycle, and local goal definitions separate.
+- For same-product surfaces inside one project, a funnel can cross hosts/paths when the identity basis supports it.
+- For related projects in one portfolio, state which project owns each step and whether cross-project identity stitching is configured with both `data-link-domains` and portfolio membership.
+- Without that identity setup, do not claim strict user conversion across projects. Report per-project raw activity and say what setup would unlock the cross-project readout.
+- Use `paths` only for session-local routes. Use funnels, journeys, identity lookup, or portfolio-aware reads for longer-cycle conversion.
+
+Tactic cards:
+
+- Activation bottleneck finder: compare signup or setup intent to the activation event; include time to value; segment by setup path, device, source, plan, or selected agent/runtime; answer with the blocked first-value step.
+- Funnel bottleneck analysis: calculate step conversion, largest absolute loss, largest relative loss, and one fix for the highest-impact bottleneck.
+- Retention cohort health: compare cohorts at the same age, separate activated from non-activated users, and warn when cohorts are right-censored.
+- Channel quality: rank channels by activated users, retained activated users, revenue, or payback, not raw signups.
+- Experiment readout: report hypothesis, primary metric, guardrails, exposure/randomization unit, sample, effect size, uncertainty, practical significance, and recommendation.
+- Instrumentation gap diagnosis: recommend tracking only when a missing event/property blocks the growth answer; name the exact event and what decision it unlocks.
+- Portfolio surface-role diagnosis: map each project/surface to its local KPI, then connect it to the shared portfolio milestone without flattening all projects into one metric.
 
 ## Example: all projects, last 48 hours
 
