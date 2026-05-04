@@ -213,6 +213,29 @@ describe('agent-analytics skill contract', () => {
     assert.doesNotMatch(skill, /generic "track more events"/i);
   });
 
+  it('teaches a closed-loop growth recipe over fixed product-growth commands', () => {
+    assert.match(skill, /Closed-loop growth recipe/i);
+    assert.match(skill, /guidance, not a rigid protocol/i);
+    assert.match(skill, /context get <project>/i);
+    assert.match(skill, /activation source of truth/i);
+    assert.match(skill, /If activation is missing, ask for it or configure it; do not guess silently/i);
+    assert.match(skill, /properties <project>/i);
+    assert.match(skill, /properties-received <project>/i);
+    assert.match(skill, /events <project>/i);
+    assert.match(skill, /Do not start broad growth diagnosis with `query`/i);
+    assert.match(skill, /Use `query` only for narrow aggregations/i);
+    assert.match(skill, /Use `funnel` for ordered activation leakage/i);
+    assert.match(skill, /Use `paths` for session-local entry, exit, detour, and drop-off behavior/i);
+    assert.match(skill, /Use `breakdown` around the largest leak/i);
+    assert.match(skill, /Use `events` or `journey` only for representative inspection/i);
+    assert.match(skill, /Recommend one narrow experiment by default/i);
+    assert.match(skill, /Recommend a readiness fix instead of an experiment/i);
+    assert.match(skill, /Read experiments against the business goal event, not exposure count/i);
+    assert.match(skill, /diagnosis, metric definition, evidence, segment\/surface, caveat, and one bounded next action/i);
+    assert.match(skill, /npx --yes @agent-analytics\/cli@0\.5\.28/);
+    assert.doesNotMatch(skill, /raw SQL|POST \/aaql\/query|\/aaql\/plan|\/aaql\/execute/i);
+  });
+
   it('teaches agents to classify project surface and portfolio scope before action', () => {
     assert.match(skill, /Classification before action/i);
     assert.match(skill, /project-first and portfolio-aware/i);

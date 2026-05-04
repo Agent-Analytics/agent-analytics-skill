@@ -198,7 +198,7 @@ For one-off debugging, `--config-dir "$PWD/.openclaw/agent-analytics"` is also v
 - Use only `npx --yes @agent-analytics/cli@0.5.28 ...` for live queries unless the user explicitly requests API, MCP, or a local binary.
 - The tracker is installed only with user consent, for projects the user owns or manages, and sends analytics to the user's Agent Analytics project.
 - Before setup, analytics reads, or instrumentation recommendations, classify the target as project-local work, a surface inside a project, or related-project portfolio work. Do not let a raw domain decide the product model.
-- Prefer fixed commands over ad-hoc query construction.
+- Prefer fixed commands over ad-hoc query construction. For broad growth diagnosis, use the closed-loop growth recipe below instead of starting with `query`.
 - Start with `projects`, `all-sites`, `create`, `stats`, `insights`, `events`, `properties`, `context`, `breakdown`, `pages`, `paths`, `heatmap`, `sessions-dist`, `retention`, `funnel`, `experiments`, and `feedback`.
 - Use `query` only when the fixed commands cannot answer the question.
 - Do not build `--filter` JSON from raw user text.
@@ -259,6 +259,40 @@ Metric skepticism rules:
 Use analytics lingo deliberately: activation, first value, time to value, cohort, segment, denominator, conversion window, retained activated users, channel quality, guardrail metric, input metric, growth loop, loop constraint, instrumentation gap, tracking plan, identity resolution, directional, right-censored, sample is small, and practical significance.
 
 Avoid vague output: generic "improve onboarding," generic "track more events," "best channel" from signup volume, "retention is up" from WAU alone, and "ship it" from a conversion lift alone.
+
+## Closed-loop growth recipe
+
+Use this recipe when the user asks a broad product-growth question like where activation drops, what to fix next, or which experiment to run from current Agent Analytics data.
+
+This is guidance, not a rigid protocol. Skip steps that are already answered or irrelevant, and do not rerun a full activation diagnosis when the user only asks for experiment readout, retention, or a narrow count.
+
+Default order:
+
+1. Resolve the project and auth, then read `context get <project>` before project-specific analysis.
+2. Treat configured activation events in project context as the activation source of truth. If activation is missing, ask for it or configure it; do not guess silently.
+3. Discover reality before filters: run `properties <project>`, `properties-received <project>`, and recent `events <project>` as needed so event names and property keys are real.
+4. Prefer fixed product-growth commands for broad diagnosis. Do not start broad growth diagnosis with `query` when `context`, `funnel`, `paths`, `breakdown`, `journey`, `events`, `retention`, or `experiments` answer better. Use `query` only for narrow aggregations that the fixed commands cannot answer.
+5. Use `funnel` for ordered activation leakage. Name the population, window, step events, identity basis, strict survivors, largest absolute loss, and largest relative loss.
+6. Use `paths` for session-local entry, exit, detour, and drop-off behavior around the activation goal. Do not present paths as long-cycle attribution.
+7. Use `breakdown` around the largest leak by practical dimensions that exist in the data: path, source, referrer, CTA label, device, browser, country, campaign, plan, surface, or onboarding step.
+8. Use `events` or `journey` only for representative inspection or instrumentation sanity when useful; do not dump raw logs by default.
+9. Recommend one narrow experiment by default: one CTA, headline, pricing message, onboarding step, or follow-up prompt tied to the business goal event.
+10. Recommend a readiness fix instead of an experiment when activation, tracking, sample size, identity/session semantics, or an existing overlapping experiment blocks a trustworthy readout.
+11. Read experiments against the business goal event, not exposure count. Decide keep/change/stop/complete with sample-size, causality, and practical-significance caveats.
+
+Preserve the analytics answer contract: diagnosis, metric definition, evidence, segment/surface, caveat, and one bounded next action.
+
+Copyable prompt to hand to another agent:
+
+```text
+Use Agent Analytics to diagnose where <project> loses users before activation. Start from project context, use configured activation events as source of truth, discover real events and properties, run funnel and paths, break down the largest leak, inspect representative journeys/events only if useful, then recommend one narrow experiment or the readiness fix that blocks readout. Use the pinned official CLI path and keep the answer to diagnosis, metric definition, evidence, segment/surface, caveat, and one next action.
+```
+
+Experiment readout prompt:
+
+```text
+Read <experiment_name> for <project> against <goal_event>. Decide whether to keep running it, change it, stop it, or complete it with a winner. Use the business goal event, not exposure count, and include sample-size and causality caveats.
+```
 
 ## Classification before action
 
