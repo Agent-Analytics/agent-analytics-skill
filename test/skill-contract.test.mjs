@@ -22,7 +22,7 @@ const readme = readFileSync(join(root, 'README.md'), 'utf8');
 
 describe('agent-analytics skill contract', () => {
   it('pins the official CLI to 0.5.28 everywhere', () => {
-    assert.match(skill, /version: 4\.0\.29/);
+    assert.match(skill, /version: 4\.0\.30/);
     assert.ok(skill.includes('npx --yes @agent-analytics/cli@0.5.28'));
     assert.ok(readme.includes('npx --yes @agent-analytics/cli@0.5.28'));
     assert.match(autoresearchSkill, /version: 1\.0\.7/);
@@ -232,6 +232,10 @@ describe('agent-analytics skill contract', () => {
     assert.match(skill, /Recommend a readiness fix instead of an experiment/i);
     assert.match(skill, /Read experiments against the business goal event, not exposure count/i);
     assert.match(skill, /diagnosis, metric definition, evidence, segment\/surface, caveat, and one bounded next action/i);
+    assert.match(skill, /There is no `report` command in CLI `0\.5\.28`/i);
+    assert.match(skill, /Produce the final report yourself from fixed-command outputs/i);
+    assert.doesNotMatch(skill, /Start with .*`report`/i);
+    assert.doesNotMatch(skill, /npx --yes @agent-analytics\/cli@0\.5\.28 report/i);
     assert.match(skill, /npx --yes @agent-analytics\/cli@0\.5\.28/);
     assert.doesNotMatch(skill, /raw SQL|POST \/aaql\/query|\/aaql\/plan|\/aaql\/execute/i);
   });

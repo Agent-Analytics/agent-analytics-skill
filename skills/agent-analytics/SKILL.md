@@ -1,7 +1,7 @@
 ---
 name: agent-analytics
 description: "Headless analytics management for AI builders shipping multi-surface products. Let your agent create projects, install tracking, compare surfaces, query results, and run growth analysis from code, chat, or the terminal."
-version: 4.0.29
+version: 4.0.30
 author: dannyshmueli
 license: MIT
 repository: https://github.com/Agent-Analytics/agent-analytics-skill
@@ -199,7 +199,8 @@ For one-off debugging, `--config-dir "$PWD/.openclaw/agent-analytics"` is also v
 - The tracker is installed only with user consent, for projects the user owns or manages, and sends analytics to the user's Agent Analytics project.
 - Before setup, analytics reads, or instrumentation recommendations, classify the target as project-local work, a surface inside a project, or related-project portfolio work. Do not let a raw domain decide the product model.
 - Prefer fixed commands over ad-hoc query construction. For broad growth diagnosis, use the closed-loop growth recipe below instead of starting with `query`.
-- Start with `projects`, `all-sites`, `create`, `stats`, `insights`, `events`, `properties`, `context`, `breakdown`, `pages`, `paths`, `heatmap`, `sessions-dist`, `retention`, `funnel`, `experiments`, and `feedback`.
+- Start with current fixed CLI commands: `projects`, `all-sites`, `create`, `stats`, `insights`, `events`, `properties`, `context`, `breakdown`, `pages`, `paths`, `heatmap`, `sessions-dist`, `retention`, `funnel`, `experiments`, and `feedback`.
+- There is no `report` command in CLI `0.5.28`. Produce the final report yourself from fixed-command outputs instead of calling `report`.
 - Use `query` only when the fixed commands cannot answer the question.
 - Do not build `--filter` JSON from raw user text.
 - For account-wide questions, start with `projects`, then run per-project CLI commands as needed.
