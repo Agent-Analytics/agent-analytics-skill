@@ -1,7 +1,7 @@
 ---
 name: agent-analytics
 description: "Product analytics with your AI agent: set up consent-based tracking, read funnels, paths, retention, experiments, and context, then recommend the smallest growth action using the official Agent Analytics CLI."
-version: 4.0.30
+version: 4.0.31
 author: dannyshmueli
 license: MIT
 repository: https://github.com/agent-analytics/skills
