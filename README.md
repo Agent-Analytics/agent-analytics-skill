@@ -68,7 +68,7 @@ The workflow is based on the public template repo:
 The skill is intentionally pinned to the official CLI invocation:
 
 ```bash
-npx --yes @agent-analytics/cli@0.5.28 <command>
+npx --yes @agent-analytics/cli@0.5.31 <command>
 ```
 
 Agent environments should prefer that exact `npx` form over raw API calls, repo-local scripts, or an already-installed binary unless the user explicitly asks for a different interface.
@@ -86,9 +86,9 @@ The skill tells agents not to treat a domain mismatch as immediate failure. Doma
 In Claude Code, Codex, Cursor, and local CLI runtimes, the setup flow signs in with the normal browser approval first, then creates or identifies the matching project before installing the project-owned tracker:
 
 ```bash
-npx --yes @agent-analytics/cli@0.5.28 login
-npx --yes @agent-analytics/cli@0.5.28 create <project> --domain <url>
-npx --yes @agent-analytics/cli@0.5.28 events <project> --event <first_useful_event> --days 7 --limit 20
+npx --yes @agent-analytics/cli@0.5.31 login
+npx --yes @agent-analytics/cli@0.5.31 create <project> --domain <url>
+npx --yes @agent-analytics/cli@0.5.31 events <project> --event <first_useful_event> --days 7 --limit 20
 ```
 
 Use `login --detached` only for Paperclip, OpenClaw, issue-based or headless runtimes, or when the local browser callback cannot work.
@@ -103,7 +103,7 @@ For OpenClaw and similar managed runtimes, store CLI auth in a persistent worksp
 
 ```bash
 export AGENT_ANALYTICS_CONFIG_DIR="$PWD/.openclaw/agent-analytics"
-npx --yes @agent-analytics/cli@0.5.28 auth status
+npx --yes @agent-analytics/cli@0.5.31 auth status
 ```
 
 Normal setup, paid upgrade, and resumed agent work do not require an API key.
@@ -111,7 +111,7 @@ Normal setup, paid upgrade, and resumed agent work do not require an API key.
 When a free account reaches a Pro-only analytics command, the skill should run the blocked command first, then use:
 
 ```bash
-npx --yes @agent-analytics/cli@0.5.28 upgrade-link --detached --reason "<why Pro is needed>" --command "<blocked command>"
+npx --yes @agent-analytics/cli@0.5.31 upgrade-link --detached --reason "<why Pro is needed>" --command "<blocked command>"
 ```
 
 The CLI prints an app-domain payment handoff for the human. The dashboard page may ask the human to sign in, confirms the same account as the CLI, shows the blocked command and reason, and then opens Lemon Squeezy. The agent should run `whoami` after payment, then rerun the blocked command once Pro is active.
