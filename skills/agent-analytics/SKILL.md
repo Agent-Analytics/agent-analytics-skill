@@ -1,10 +1,10 @@
 ---
 name: agent-analytics
 description: "Product analytics with your AI agent: set up consent-based tracking, read funnels, paths, retention, experiments, and context, then recommend the smallest growth action using the official Agent Analytics CLI."
-version: 4.0.31
+version: 4.0.32
 author: dannyshmueli
 license: MIT
-repository: https://github.com/agent-analytics/skills
+repository: https://github.com/Agent-Analytics/skills
 homepage: https://agentanalytics.sh
 compatibility: Requires npx. Browser approval is the normal sign-in path. Detached approval plus finish-code handoff is for Paperclip, OpenClaw, issue-based or headless runtimes, or failed callback environments. Normal setup does not require an API key.
 tags:

@@ -78,7 +78,7 @@ Use it when you want the agent to:
 
 Related canonical links:
 
-- Package repo: <https://github.com/agent-analytics/skills>
+- Package repo: <https://github.com/Agent-Analytics/skills>
 - Agent Analytics: <https://agentanalytics.sh>
 - Docs: <https://docs.agentanalytics.sh/>
 - CLI package: <https://github.com/Agent-Analytics/agent-analytics-cli>

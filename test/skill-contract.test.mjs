@@ -22,10 +22,10 @@ const readme = readFileSync(join(root, 'README.md'), 'utf8');
 
 describe('agent-analytics skill contract', () => {
   it('pins the official CLI to 0.5.31 everywhere', () => {
-    assert.match(skill, /version: 4\.0\.31/);
+    assert.match(skill, /version: 4\.0\.32/);
     assert.ok(skill.includes('npx --yes @agent-analytics/cli@0.5.31'));
     assert.ok(readme.includes('npx --yes @agent-analytics/cli@0.5.31'));
-    assert.match(autoresearchSkill, /version: 1\.0\.8/);
+    assert.match(autoresearchSkill, /version: 1\.0\.9/);
     assert.ok(autoresearchSkill.includes('npx --yes @agent-analytics/cli@0.5.31'));
     assert.ok(autoresearchBriefTemplate.includes('npx --yes @agent-analytics/cli@0.5.31'));
     assert.ok(autoresearchSnapshotScript.includes('npx --yes @agent-analytics/cli@0.5.31'));
