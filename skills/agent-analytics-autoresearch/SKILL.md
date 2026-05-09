@@ -4,7 +4,7 @@ description: "Run an autoresearch-style growth loop for landing pages, onboardin
 version: 1.0.7
 author: dannyshmueli
 license: MIT
-repository: https://github.com/Agent-Analytics/agent-analytics-skill
+repository: https://github.com/agent-analytics/skills
 homepage: https://agentanalytics.sh
 compatibility: Requires a coding agent that can read and write local files. Agent Analytics data collection requires npx and browser approval or detached login. The loop can also run from pasted reports, SQL output, CSV exports, or existing analytics files.
 tags:
@@ -34,7 +34,7 @@ This skill is based on:
 
 - Autoresearch Growth template: <https://github.com/Agent-Analytics/autoresearch-growth>
 - Agent Analytics: <https://agentanalytics.sh>
-- Regular Agent Analytics skill: <https://github.com/Agent-Analytics/agent-analytics-skill/tree/main/skills/agent-analytics>
+- Regular Agent Analytics skill: <https://github.com/agent-analytics/skills/tree/main/skills/agent-analytics>
 
 Use the regular `agent-analytics` skill for general setup, tracking installation, ad hoc reporting, and normal experiment operations. Use this skill for structured variant generation and judging from a project brief plus analytics data.
 
