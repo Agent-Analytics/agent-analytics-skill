@@ -32,7 +32,7 @@ metadata:
 
 Product analytics with your AI agent. Use this skill when a user wants an agent to install Agent Analytics, query product behavior, diagnose activation or retention, inspect paths and funnels, run experiment reads, or decide what growth action to take next.
 
-The CLI is the execution substrate. The scanner is an optional helper for no-code or URL-only audits; when repo code is available, inspect the product code before relying on scanner recommendations. Framework recipes belong in `references/growth-recipes.md`, not as separate skills.
+The CLI is the execution substrate. Start from the user's codebase, project goals, and product workflows whenever repo access exists. Framework recipes belong in `references/growth-recipes.md`, not as separate skills.
 
 ## Mandatory execution policy
 
@@ -86,25 +86,26 @@ For cross-project identity stitching, configure both sides: tracker `data-link-d
 
 ## Consent-based tracker setup policy
 
-When installing tracking or events, use a consent-based, project-owned workflow. Do not guess. Do not overtrack. Do not install generic events that do not map to product goals or a specific workflow in the repo.
+When installing tracking or events, use a consent-based, project-owned workflow. Do not guess. Do not overtrack. Do not install generic events that do not map to user-confirmed product goals or a specific workflow in the repo.
 
 Setup order:
 
 1. Classify project/surface/portfolio scope.
-2. Inspect routes, forms, CTA handlers, auth/setup/checkout flows, existing analytics calls, server-side durable outcomes, and tests when repo access exists.
-3. Login if needed.
-4. Create or identify the project with `create <project> --domain <origin>` or `projects`; `--domain` is a setup origin, not the project identity.
-5. Add the exact tracking snippet returned for that project. Treat the base tracker snippet as the start of instrumentation, not the full instrumentation plan.
-6. Add the smallest named set of meaningful events and tracker opt-ins needed for the user's goals.
-7. Prefer named CTA clicks, signup intent, pricing interactions, checkout progress or completion, install/setup steps, activation milestones, and durable server-side outcome events such as `signup_completed`, `subscription_started`, `install_completed`, `project_created`, or `first_event_received`.
-8. Map needs to tracker capabilities: `data-aa-event`, `data-aa-impression`, `window.aa.track(...)`, server-side tracking, `aa.identify(...)`, and `aa.set(...)`. Use scroll depth, form tracking, downloads, vitals/errors/performance, and SPA tracking only when they unlock a concrete growth decision.
-9. Do not add duplicate custom events for automatic signals: page views, paths, referrers, UTMs, sessions, days since first visit, first-touch attribution, device/browser fields, or country.
-10. Explain what each event enables, verify the first useful event with `events <project>`, and summarize what the installed events now let the user's agent answer.
+2. Ask for or propose the initial project/portfolio goal and get confirmation before storing durable context.
+3. Inspect routes, forms, CTA handlers, auth/setup/checkout flows, existing analytics calls, server-side durable outcomes, and tests when repo access exists.
+4. Login if needed.
+5. Create or identify the project with `create <project> --domain <origin>` or `projects`; `--domain` is a setup origin, not the project identity.
+6. Add the exact tracking snippet returned for that project. Treat the base tracker snippet as the start of instrumentation, not the full instrumentation plan.
+7. Add the smallest named set of meaningful events and tracker opt-ins needed for the user's confirmed goals.
+8. Prefer named CTA clicks, signup intent, pricing interactions, checkout progress or completion, install/setup steps, activation milestones, and durable server-side outcome events such as `signup_completed`, `subscription_started`, `install_completed`, `project_created`, or `first_event_received`.
+9. Map needs to tracker capabilities: `data-aa-event`, `data-aa-impression`, `window.aa.track(...)`, server-side tracking, `aa.identify(...)`, and `aa.set(...)`. Use scroll depth, form tracking, downloads, vitals/errors/performance, and SPA tracking only when they unlock a concrete growth decision.
+10. Do not add duplicate custom events for automatic signals: page views, paths, referrers, UTMs, sessions, days since first visit, first-touch attribution, device/browser fields, or country.
+11. Explain what each event enables, verify the first useful event with `events <project>`, and summarize what the installed events now let the user's agent answer.
 
 Copyable setup handoff:
 
 ```text
-Set up Agent Analytics for this project. If browser approval is needed, open it and wait for me. I will sign in with Google or GitHub and approve it. If the browser callback cannot resume you, ask me for the finish code as a fallback. After that, create or identify the matching Agent Analytics project, install the project-owned tracker, add only meaningful custom events tied to this repo's product workflows, explain what each event enables, and verify the first useful event.
+Set up Agent Analytics for this project. If browser approval is needed, open it and wait for me. I will sign in with Google or GitHub and approve it. If the browser callback cannot resume you, ask me for the finish code as a fallback. After that, create or identify the matching Agent Analytics project, ask me to confirm the initial product goal before storing durable context, install the project-owned tracker, add only meaningful custom events tied to this repo's product workflows and that goal, explain what each event enables, and verify the first useful event.
 ```
 
 ## Product context loop
@@ -175,7 +176,7 @@ Load references only when they are needed:
 
 ## Pitfalls
 
-- Do not use scanner output instead of code inspection when repo access exists.
+- Do not use URL-only assumptions instead of code inspection when repo access exists.
 - Do not create a project for every subdomain, localhost URL, staging URL, or preview.
 - Do not install generic click/pageview duplicates for automatic tracker signals.
 - Do not store temporary metrics, reports, PII, secrets, or git commit logs in context.
